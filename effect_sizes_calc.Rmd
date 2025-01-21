@@ -1,0 +1,550 @@
+---
+title: "effect_sizes"
+output: html_document
+date: "2024-10-04"
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+# Estimation of effect sizes for sex- and hormone-related differences in non visual responses to light exposure
+
+## Aim
+
+This script calculates effect sizes from published studies on sex- and hormone-related differences in non-visual responses to light exposure.
+Specifically, we will be calculating effect sizes from results of the 12 studies analysed in the Open Research Knowledge Graph (ORKG) comparison by [Guidolin et al (2024)](https://doi.org/10.48366/R733094).
+
+## Approach
+
+To estimate effect sizes from each study, we will be following guidelines from the interactive book ["Guide to Effect Sizes and Confidence Intervals" (Jané et al., 2024)](http://dx.doi.org/10.17605/OSF.IO/D8C4G).
+When a different approach is used to calculate effect sizes, it is explicitly specified prior to implementation.
+
+## Structure of this R Markdown
+
+### Choice of nomenclature
+
+To standardise the way effect sizes are calculated, Group 1 always corresponds to women, or females, and Group 2 always corresponds to men, or males, depending on whether how the terminology used in the individual study.
+For each analysis of interest carried in the study, a code was assigned to it (e.g. `vidafar_001` refers to the first analysis in the Vidafar et al. (2024) paper).
+Note that in case of papers which have the same first author (e.g. Nathan), the numbers in the analysis code continue in ascending order.
+
+### Loading in necessary packages for effect sizes calculations
+
+```{r}
+library(tidyverse)
+library(effectsize)
+library(MOTE)
+library(MetaUtility)
+```
+
+#### Paper: [Greater sensitivity of the circadian system of women to bright light, but not dim-to-moderate light (Vidafar et al., 2024)](https://onlinelibrary.wiley.com/doi/10.1111/jpi.12936).
+
+#### Analysis code: vidafar_001
+In this analysis, the authors measure sex differences in melatonin concentrations under a 400 lux light exposure using an independent samples t-test (N=55, 28 women). They report a significant sex difference in the percentage change in the area under the curve (AUC) of the salivary melatonin profile relative to the dim light condition: 93.7±9.6% (women) vs. 83.2±18.7% (men), p=.01. It is not reported in the paper whether the variability in this result is standard deviation (SD), hence we make the assumption that it is. To calculate an effect size from these values, we use Cohen's d for a two independent groups design. 
+
+```{r}
+# Calculating Cohen's d
+# Group 1 Mean = 93.7, SD = 9.6, N = 28
+# Group 2 Mean = 83.2, SD = 18.7, N = 27
+
+stats_vid001 <- MOTE::d.ind.t(
+  m1 = 93.7,
+  m2 = 83.2,
+  sd1 = 9.6,
+  sd2 = 18.7,
+  n1 = 28,
+  n2 = 27,
+  a = 0.05
+)
+
+# Create a df with relevant information
+vidafar_001 <- data.frame(
+  d = apa(stats_vid001$d), 
+  dlow = apa(stats_vid001$dlow), 
+  dhigh = apa(stats_vid001$dhigh))
+
+# Add info for output table
+vidafar_001 <- vidafar_001 %>%
+  mutate(reference = "Vidafar et al. (2024)",
+         doi = "10.1111/jpi.12936",
+         analysis_code = "vidafar_001",
+         outcome_measured = "Melatonin concentration in 400 lux condition",
+         effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
+
+```
+
+#### Analysis code: vidafar_002
+In this analysis, the authors measure sex differences in melatonin concentrations under a 2000 lux light exposure using an independent samples t-test (N=33, 17 women). They report a significant sex difference in the percentage change in the area under the curve (AUC) of the salivary melatonin profile relative to the dim light condition:  99.5±1.0% (women) vs. 96.9±4.3% (men),p=.01. Again, we make the assumption that these values represent mean±SD. To calculate an effect size from these values, we use Cohen's d for a two independent groups design. 
+
+```{r}
+# Calculating Cohen's d 
+# Group 1 Mean = 99.5, SD = 1.0, N = 17
+# Group 2 Mean = 96.9, SD = 4.3, N = 16
+
+stats_vid002 <- MOTE::d.ind.t(
+  m1 = 99.5,
+  m2 = 96.9,
+  sd1 = 1.0,
+  sd2 = 4.3,
+  n1 = 17,
+  n2 = 16,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+vidafar_002 <- data.frame(d = apa(stats_vid002$d),
+                         dlow = apa(stats_vid002$dlow),
+                         dhigh = apa(stats_vid002$dhigh)) 
+
+# Add info for output table
+vidafar_002 <- vidafar_002 %>%
+   mutate(reference = "Vidafar et al. (2024)",
+         doi = "10.1111/jpi.12936",
+         analysis_code = "vidafar_002",
+         outcome_measured = "Melatonin concentration in 2000 lux condition",
+         effsize_calculated = "d=0.85, 95% CI[0.13, 1.55]")
+
+```
+
+#### Analysis code: vidafar_003
+In this analysis, melatonin suppresson is calculated as a function of sex related factors, to indentify which se-related factors predict melatonin suppression. This is done using a Tobit regression model with primary predictor variable(s): (i) sex, (ii) menstrual phase (women only), (iii) estradiol and progesterone levels (women only), and (iv) testosterone (men only, using the mean of the two testosterone samples). The adjusted model included age, sex and phase angle of habitual bedtime to DLMO. The authors report the beta coefficient of the unadjusted and adjusted regression model for sex as main predictor of melatonin suppression (unstandardised coefficients): β=.09±.06, p=.14 and β=.13±.06, p=.04 (unadjusted and adjusted models, respectively). As this information is not sufficient to calculate an effect size, we do not include this analysis in our table overview. 
+
+#### Analysis codes: vidafar_004, vidafar_005, vidafar_006, and vidafar_007
+These analyses use tobit regression models to investigate melatonin suppression as a function of menstrual phase (vidafar_004), progesterone concentration (vidafar_005), estradiol concentration (vidafar_006), and testosterone (vidafar_007). Just as for vidafar_003, we are missing the whole model equation to determine effect sizes and hence do not include them in our table overview.
+
+#### Analysis code: vidafar_008
+This analysis looks at the correlation between testosterone levels in men (N=16, all male) at two light intensities and melatonin suppression using Pearson's correlation (100 lux: r=0.21, 200 lux: r=.-20). Since the variables in this correlations are both continuous (melatonin suppression and testosterone levels), this is not a point-biserial correlation. Hence, we cannot use the approach described in our reference book. Mathur & VanderWeele (2021) [<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7906439/#R1>], suggest a different approach which uses the function r_to_d from the MetaUtility package:
+```{r}
+# Example use
+r_to_d(r,
+       sx, # sample sd of X
+       delta,
+       N = NA,
+       Ns = N,
+       sx.known = FALSE)
+```
+
+However, as we missing a measure of variability (sample sd of X), we cannot use this function. As for previous analyses, we exclude this one from our overview table.  
+
+#### Paper: [Does bright light suppress nocturnal melatonin secretion more in women than men? (Monteleone et al., 1995)](https://link.springer.com/article/10.1007/BF01276567).
+
+#### Analysis code: monteleone_001 
+This analysis looks at sex differences in melatonin suppression percentage (N=12,6 women). The start of the light exposure (02:00) is considered as 100%, and the plasma melatonin values at timepoints 03:00, 03:30 and 04:00 were converted into percentages relative to this 100%. The results are reported as means, however no SD or SEM is provided:
+- 53% vs 13.8% at 3.00h, p<0.05,
+- 64% vs 25.8% at 3.30h, p<0.05,
+- 70.5% vs 26.3% at 4.00h, p<0.04
+From Figure 2, we can however manually extract the data point corresponding to each error bar using [WebPlotDigitizer](https://automeris.io/) and exporting the csv containing the measured data points. This would allow us to calculate an effect size. First, we import these csv files.
+
+```{r}
+# Importing extracted data for Figure 2 top panel (men)
+mont_fig02_men <- read.csv("H:/shine/preregistration/power_analysis/monteleone_001_men.csv",
+                           sep = ";")
+  
+# Importing extracted data for Figure 2 bottom panel (women)
+mont_fig02_women <- read.csv("H:/shine/preregistration/power_analysis/monteleone_001_women.csv",
+                           sep = ";")
+
+```
+
+Next, we calculate light sensitivity as described by the authors: "[...] plasma melatonin values were converted into percentages of the melatonin values at 2.00h (Fig. 2). Subtraction of percentage values after light exposure from corresponding time point values in dark condition gives a measure of light sensitivity".
+
+```{r}
+# Men
+mont_fig02_men <- mont_fig02_men %>%
+  mutate(light_sens = base::abs(light_mean - dark_mean)) # take absolute value of the difference
+
+# Women
+mont_fig02_women <- mont_fig02_women %>%
+  mutate(light_sens = base::abs(light_mean - dark_mean)) # take absolute value of the difference  
+```
+
+#### monteleone_002
+
+Same problem as above?
+
+#### monteleone_003
+This analysis looks at melatonin suppression as a function of gender, using a repeated measures ANOVA with time and gender as main effects. The authors report the F statistic for the ANOVA with main effects for gender, F(1,10) = 0.422, ns. According to our reference book, the `eta_squared()` function from the `effectsize` package should be used to return the effect size for a two-way repeated measures ANOVA.
+However, for this function, one would need the print-out of the whole statistical model. Since we do not have this, but only the F statistic, we follow the [guidelines from the effectsize package itself](https://easystats.github.io/effectsize/articles/from_test_statistics.html#partial-percent-variance-explained>) to convert the F value to the eta square.
+
+```{r}
+#F statistic reported: F(1,10) = 0.422
+
+monteleone_003 <- effectsize::F_to_eta2(f = 0.422,
+          df = 1,
+          df_error = 10,
+          alternative = "two.sided") %>%
+  mutate(analysis = "monteleone_003")
+
+# Add info for output table
+
+monteleone_003 <- monteleone_003 %>%
+  mutate(reference = "Monteleone et al. (1995)",
+         doi = "10.1007/BF01276567",
+         analysis_code = "monteleone_003",
+         outcome_measured = "Melatonin suppression as a function of gender",
+         effsize_calculated = "ηp2=0.04, 95% CI[0, 0.40]")
+```
+
+### boyce_kennaway_002
+
+Assumption: Values reported in Table 1 correspond to male and female.
+Ignoring the individual value in-between columns M and F.
+Conversion: Cohen's d for two independent groups design
+
+```{r}
+#Calculating Cohens'd for 90 minutes timepoint at 1000 lux
+#Group 1 (females) = 179.7 ± 119.7 melatonin concentration 
+#Group 2 (males) = 202.6 ± 136.2 melatonin concentration 
+
+stats_b <- MOTE::d.ind.t(
+  m1 = 179.7,
+  m2 = 202.6 ,
+  sd1 = 119.7 ,
+  sd2 = 136.2,
+  n1 = 5,
+  n2 = 5,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+boyce_kennaway_1b <- data.frame(d = apa(stats_b$d),
+                         dlow = apa(stats_b$dlow),
+                         dhigh = apa(stats_b$dhigh)) %>%
+  mutate(analysis = "boyce_kennaway_002")
+
+```
+
+### nathan_001
+
+Conversion: F value to eta squared
+
+```{r}
+#F(1,41) = 0.00
+nathan_001 <- effectsize::F_to_eta2(f = 0.00,
+          df = 1,
+          df_error = 41,
+          alternative = "two.sided") %>%
+  mutate(analysis = "nathan_001")
+```
+
+### nathan_002
+
+Conversion: Cohen's d for two independent groups design
+
+```{r}
+#AUC females 357.1 ± 262.7 pg/ml/hr 
+#AUC malesand males 366.8 ± 147.9 pg/ml/hr)
+
+stats_n <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 357.1,
+  m2 = 366.8 ,
+  sd1 = 262.7 ,
+  sd2 = 147.9,
+  n1 = 21,
+  n2 = 22,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+nathan_002 <- data.frame(d = apa(stats_n$d),
+                         dlow = apa(stats_n$dlow),
+                         dhigh = apa(stats_n$dhigh)) %>%
+  mutate(analysis = "nathan_002")
+```
+
+### nathan_003
+
+Conversion: Cohen's d for two independent groups design
+
+```{r}
+#Mean and SD reported for % melatonin suppression 
+#females 14.5± 15.2
+#males 16.9±18
+
+stats_n1 <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 14.5,
+  m2 = 16.9 ,
+  sd1 = 15.2 ,
+  sd2 = 18,
+  n1 = 21,
+  n2 = 22,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+nathan_003 <- data.frame(d = apa(stats_n1$d),
+                         dlow = apa(stats_n1$dlow),
+                         dhigh = apa(stats_n1$dhigh)) %>%
+  mutate(analysis = "nathan_003")
+```
+
+### nathan_004
+
+Conversion: Cohen's d for two independent groups design
+
+```{r}
+#AUC females 320.7±103.7pg/ml/hr 
+#AUC males 286.5±119pg/ml/hr
+
+stats_n2 <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 320.7,
+  m2 = 286.5,
+  sd1 = 103.7 ,
+  sd2 = 119,
+  n1 = 7,
+  n2 = 4,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+nathan_004 <- data.frame(d = apa(stats_n2$d),
+                         dlow = apa(stats_n2$dlow),
+                         dhigh = apa(stats_n2$dhigh)) %>%
+  mutate(analysis = "nathan_004")
+
+```
+
+### nathan_005
+
+Conversion: Cohen's d for two independent groups design
+
+```{r}
+#% suppression females 44.9±8.4,
+#% suppression males 35.0±11.9 
+
+stats_n3 <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 44.9,
+  m2 = 35.0,
+  sd1 = 8.4,
+  sd2 = 11.9,
+  n1 = 7,
+  n2 = 4,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+nathan_005 <- data.frame(d = apa(stats_n3$d),
+                         dlow = apa(stats_n3$dlow),
+                         dhigh = apa(stats_n3$dhigh)) %>%
+  mutate(analysis = "nathan_005")
+
+
+```
+
+### nathan_006
+
+Conversion: eta squared from F statistics.
+
+```{r}
+# ANOVA results for slope: F1,8=16.01, p>.05
+
+nathan_006 <- effectsize::F_to_eta2(f = 16.01,
+          df = 1,
+          df_error = 8,
+          alternative = "two.sided") %>%
+  mutate(analysis = "nathan_006")
+```
+
+### nathan_007
+
+Conversion: eta squared from F statistics.
+
+```{r}
+#Influence of menstrual phase on melatonin concentration: F2,10= 0.31, p=.74.
+
+nathan_007 <- effectsize::F_to_eta2(f = 0.31,
+          df = 2,
+          df_error = 10,
+          alternative = "two.sided") %>%
+  mutate(analysis = "nathan_007")
+```
+
+### nathan_008
+
+Conversion: eta squared from F statistics.
+
+```{r}
+#Influence of menstrual phase on melatonin suppression: F2,10 = 0.03, p >0.97
+nathan_008 <- effectsize::F_to_eta2(f = 0.03,
+          df = 2,
+          df_error = 10,
+          alternative = "two.sided") %>%
+  mutate(analysis = "nathan_008")
+
+```
+
+#chellappa_002 Conversion: eta squared from F statistics.
+
+```{r}
+chellappa_002 <- effectsize::F_to_eta2(f = 4.2,
+          df = 1,
+          df_error = 29,
+          alternative = "two.sided") %>%
+  mutate(analysis = "chellappa_002") 
+
+```
+
+## Part 2: Effect sizes for studies looking at differences between health naturally cycling individuals and individuals with a diagnosis of premenstrual dysphoric disorder (PMDD)
+
+### Choice of nomenclature
+
+1.  To standardise the way we calculate effect sizes from studies looking at sex differences, Group 1 will always be naturally cycling individuals (NC) and Group 2 will always individuals with a PMDD diagnosis.
+
+### parry_001
+
+Conversion: eta squared from F statistics.
+
+```{r}
+#F = 18.62, df = 2, 22, p < .0001
+parry_001 <- effectsze::F_to_eta2(f = 18.62,
+                       df = 2,
+                       df_error = 22,
+                       alternative = "two.sided") %>%
+  mutate(analysis = "parry_001")
+```
+
+### parry_002
+
+Conversion: Cohen's d for two independent groups design.
+
+```{r}
+# Follicular phase, NC: 58.4±12.6, PMDD: 62±17.5
+stats_p <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 58.4,
+  m2 = 62,
+  sd1 = 12.6 ,
+  sd2 = 17.5,
+  n1 = 5,
+  n2 = 8,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+parry_002 <- data.frame(d = apa(stats_p$d),
+                         dlow = apa(stats_p$dlow),
+                         dhigh = apa(stats_p$dhigh)) %>%
+  mutate(analysis = "parry_002")
+```
+
+### parry_003
+
+Conversion: Cohen's d for two independent groups design.
+
+```{r}
+# Luteal phase, NC: 56.0±11.8, PMDD: 61.4±16.5
+
+stats_p <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
+  m1 = 56.0,
+  m2 = 61.4,
+  sd1 = 11.8,
+  sd2 = 16.5,
+  n1 = 5,
+  n2 = 8,
+  a = 0.05
+)
+
+# Print just the d value and confidence intervals
+parry_003 <- data.frame(d = apa(stats_p$d),
+                         dlow = apa(stats_p$dlow),
+                         dhigh = apa(stats_p$dhigh)) %>%
+  mutate(analysis = "parry_003")
+```
+
+### parry_004
+
+Conversion: eta squared from F statistics.
+
+```{r}
+#Delta offset time of melatonin. F (1,11) = 5.11, p=0.45
+
+parry_004 <- effectsize::F_to_eta2(f = 5.11,
+                       df = 1, 
+                       df_error = 11, 
+                       alternative = "two.sided") %>%
+  mutate(analysis = "parry_004")
+```
+
+### parry_005
+
+Conversion: t test statistic to Cohen's d.
+
+```{r}
+# unpaired t-statistic = -0.06
+# n1 = 5, n2 = 8
+
+t <- -0.06
+n1 <- 5
+n2 <- 8
+
+parry_005 <- effectsize::t_to_d(t, df_error = n1+n2-2, paired = FALSE) %>%
+  mutate(analysis = "parry_005")
+```
+
+### parry_006
+
+Conversion: t test statistic to Cohen's d.
+
+```{r}
+# unpaired t-statistic = 2.63
+# n1 = 5, n2 = 8
+
+t <- 2.63
+n1 <- 5
+n2 <- 8
+
+parry_006 <- effectsize::t_to_d(t, df_error = n1+n2-2, paired = FALSE) %>%
+  mutate(analysis = "parry_006")
+```
+
+### parry_007
+
+Conversion: t test statistic to Cohen's d.
+
+```{r}
+# paired t-statistic = 3.07
+# n = 5
+
+t <- 3.07
+n <- 8
+
+parry_007 <- effectsize::t_to_d(t, df_error = n-1, paired = TRUE) %>%
+  mutate(analysis = "parry_007")
+```
+
+### parry_008
+
+Conversion: t test statistic to Cohen's d.
+
+```{r}
+# paired t-statistic = 1.31
+# n = 5
+
+t <- 1.31
+n <- 5
+
+parry_008 <- effectsize::t_to_d(t, df_error = n-1, paired = TRUE) %>%
+  mutate(analysis = "parry_008")
+```
+
+### parry_009
+
+Conversion: eta squared from F statistics.
+
+```{r}
+parry_009 <- effectsize::F_to_eta2(f=6.89,
+                                   df = 1,
+                                   df_error = 9,
+                                   alternative = "two.sided") %>%
+  mutate(analysis = "parry_009")
+```
+
+### parry_010
+
+Conversion: eta squared from F statistics
+
+```{r}
+parry_010 <- effectsize::F_to_eta2(f=0.10,
+                                   df=1,
+                                   df_error = 11,
+                                   alternative = "two.sided") %>%
+  mutate(analysis = "parry_010")
+```
