@@ -159,11 +159,11 @@ First, we import these csv files.
 
 ```{r}
 # Importing extracted data for Figure 2 top panel (men)
-mont_fig02_men <- read.csv("H:/shine/preregistration/power_analysis/monteleone_001_men.csv",
+mont_fig02_men <- read.csv("Z:/shine/preregistration/power_analysis/monteleone_001_men.csv",
                            sep = ";")
   
 # Importing extracted data for Figure 2 bottom panel (women)
-mont_fig02_women <- read.csv("H:/shine/preregistration/power_analysis/monteleone_001_women.csv",
+mont_fig02_women <- read.csv("Z:/shine/preregistration/power_analysis/monteleone_001_women.csv",
                            sep = ";")
 
 ```
@@ -612,170 +612,254 @@ parry_001 <- parry_001 %>%
        effsize_calculated = "d=0.1, 95% CI [-0.78,0.98]")
 ```
 
-
-
-
-
-### Choice of nomenclature
-
-1.  To standardise the way we calculate effect sizes from studies looking at sex differences, Group 1 will always be naturally cycling individuals (NC) and Group 2 will always individuals with a PMDD diagnosis.
-
-### parry_001
-
-Conversion: eta squared from F statistics.
+### Analysis code: parry_002
+The authors report mean±SD melatonin values for each night of Study 2 in PMDD as well as NC participants in Table 2. Although the authors mainly perform between-group analyses, this tables provides us with information to calculate effect sizes of parameters of interest within the NC group (N=5 women). In this analysis, we calculate the effect size of the change score nights 1 to 3 (see column in Table 2) between the follicular andluteal phase. To keep nomenclature consistent with parry_001, the follicular phase is considered "group 1" or "phase 1", whereas the luteal phase is considered "group 2" or "phase 2". 
+Change score if offset time:
+- 0.60±0.65 (military time, follicular phase)
+- 0.70±0.91 (military time, luteal phase)
+We take the same approach as parry_001 to calculate an effect size for this analysis, since we are facing the same type of data: repeated measures and within group.
 
 ```{r}
-#F = 18.62, df = 2, 22, p < .0001
-parry_001 <- effectsze::F_to_eta2(f = 18.62,
-                       df = 2,
-                       df_error = 22,
-                       alternative = "two.sided") %>%
-  mutate(analysis = "parry_001")
-```
 
-### parry_002
-
-Conversion: Cohen's d for two independent groups design.
-
-```{r}
-# Follicular phase, NC: 58.4±12.6, PMDD: 62±17.5
-stats_p <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
-  m1 = 58.4,
-  m2 = 62,
-  sd1 = 12.6 ,
-  sd2 = 17.5,
-  n1 = 5,
-  n2 = 8,
+stats_p002 <- MOTE::d.dep.t.avg(
+  m1 = 0.60,
+  m2 = 0.70,
+  sd1 = 0.65,
+  sd2 = 0.91,
+  n = 5,
   a = 0.05
 )
 
-# Print just the d value and confidence intervals
-parry_002 <- data.frame(d = apa(stats_p$d),
-                         dlow = apa(stats_p$dlow),
-                         dhigh = apa(stats_p$dhigh)) %>%
-  mutate(analysis = "parry_002")
+# print just the d value and confidence intervals
+parry_002 <- data.frame(d = apa(stats_p002$d),
+                        dlow = apa(stats_p002$dlow),
+                        dhigh = apa(stats_p002$dhigh))
+
+# Add info for output table
+parry_002 <- parry_002 %>%
+  mutate(reference = "Parry et al. (1997)",
+       doi = "10.1177/074873049701200506",
+       analysis_code = "parry_002",
+       outcome_measured = "Change score in melatonin offset time between night 1 and night 3 of circadian phase shift study",
+       effsize_calculated = "d=-0.13, 95% CI [-1.01,0.76]")
+
 ```
 
-### parry_003
-
-Conversion: Cohen's d for two independent groups design.
-
+#### Analysis code: parry_003
+From Table 2, we can also extract the change score (delta) in onset time of melatonin between night 1 and night 2 of the circadian phase shift study:
+- 0.20±0.27 (military time, follicular phase)
+- 0.40±0.65 (military time, luteal phase)
 ```{r}
-# Luteal phase, NC: 56.0±11.8, PMDD: 61.4±16.5
-
-stats_p <- MOTE::d.ind.t( #change this to delta.ind.t to calculate glass's delta
-  m1 = 56.0,
-  m2 = 61.4,
-  sd1 = 11.8,
-  sd2 = 16.5,
-  n1 = 5,
-  n2 = 8,
+stats_p003 <- MOTE::d.dep.t.avg(
+  m1 = 0.20,
+  m2 = 0.40,
+  sd1 = 0.27,
+  sd2 = 0.65,
+  n = 5,
   a = 0.05
 )
 
-# Print just the d value and confidence intervals
-parry_003 <- data.frame(d = apa(stats_p$d),
-                         dlow = apa(stats_p$dlow),
-                         dhigh = apa(stats_p$dhigh)) %>%
-  mutate(analysis = "parry_003")
+# print just the d value and confidence intervals
+parry_003 <- data.frame(d = apa(stats_p003$d),
+                        dlow = apa(stats_p003$dlow),
+                        dhigh = apa(stats_p003$dhigh))
+
+# Add info for output table
+parry_003 <- parry_003 %>%
+  mutate(reference = "Parry et al. (1997)",
+       doi = "10.1177/074873049701200506",
+       analysis_code = "parry_003",
+       outcome_measured = "Change score in melatonin onset time between night 1 and night 3 of circadian phase shift study",
+       effsize_calculated = "d=-0.44, 95% CI [-1.34,0.51]")
 ```
 
-### parry_004
-
-Conversion: eta squared from F statistics.
-
+#### Analysis code: parry_004
+From Table 2, we extract the change score (delta) in duration (hours) of melatonin between night 1 and night 2 of the circadian phase shift study:
+- -0.10±0.76 (hours, follicular phase)
+- -0.30±1.03 (hours, luteal phase)
 ```{r}
-#Delta offset time of melatonin. F (1,11) = 5.11, p=0.45
+stats_p004 <- MOTE::d.dep.t.avg(
+  m1 = -0.10,
+  m2 = -0.30,
+  sd1 = 0.76,
+  sd2 = 1.03,
+  n = 5,
+  a = 0.05
+)
 
-parry_004 <- effectsize::F_to_eta2(f = 5.11,
-                       df = 1, 
-                       df_error = 11, 
-                       alternative = "two.sided") %>%
-  mutate(analysis = "parry_004")
+# print just the d value and confidence intervals
+parry_004 <- data.frame(d = apa(stats_p004$d),
+                        dlow = apa(stats_p004$dlow),
+                        dhigh = apa(stats_p004$dhigh))
+
+# Add info for output table
+parry_004 <- parry_004 %>%
+  mutate(reference = "Parry et al. (1997)",
+       doi = "10.1177/074873049701200506",
+       analysis_code = "parry_004",
+       outcome_measured = "Change score in melatonin duration between night 1 and night 3 of circadian phase shift study",
+       effsize_calculated = "d=0.22, 95% CI [-0.68,1.01]")
 ```
 
-### parry_005
-
-Conversion: t test statistic to Cohen's d.
-
+#### Analysis code: parry_005
+From Table 2, we extract the change score (delta) in melatonin peak (pg/ml) between night 1 and night 2 of the circadian phase shift study:
+- -5.29±9.00 (follicular phase)
+- -0.83±4.50 (luteal phase)
 ```{r}
-# unpaired t-statistic = -0.06
-# n1 = 5, n2 = 8
+stats_p005 <- MOTE::d.dep.t.avg(
+  m1 = -5.29,
+  m2 = -0.83,
+  sd1 = 9.00,
+  sd2 = 4.50,
+  n = 5,
+  a = 0.05
+)
 
-t <- -0.06
-n1 <- 5
-n2 <- 8
+# print just the d value and confidence intervals
+parry_005 <- data.frame(d = apa(stats_p005$d),
+                        dlow = apa(stats_p005$dlow),
+                        dhigh = apa(stats_p005$dhigh))
 
-parry_005 <- effectsize::t_to_d(t, df_error = n1+n2-2, paired = FALSE) %>%
-  mutate(analysis = "parry_005")
+# Add info for output table
+parry_005 <- parry_005 %>%
+  mutate(reference = "Parry et al. (1997)",
+       doi = "10.1177/074873049701200506",
+       analysis_code = "parry_005",
+       outcome_measured = "Change score in melatonin peak between night 1 and night 3 of circadian phase shift study",
+       effsize_calculated = "d=-0.66, 95% CI [-1.61,0.35]")
 ```
 
-### parry_006
-
-Conversion: t test statistic to Cohen's d.
-
+#### Analysis code: parry_006
+From Table 2, we extract the change score (delta) in melatonin area under the curve (AUC, pg/ml) between night 1 and night 2 of the circadian phase shift study:
+- -662±1495 (follicular phase)
+- -2388±5138 (luteal phase)
 ```{r}
-# unpaired t-statistic = 2.63
-# n1 = 5, n2 = 8
+stats_p006 <- MOTE::d.dep.t.avg(
+  m1 = -662,
+  m2 = -2388,
+  sd1 = 1495,
+  sd2 = 5138,
+  n = 5,
+  a = 0.05
+)
 
-t <- 2.63
-n1 <- 5
-n2 <- 8
+# print just the d value and confidence intervals
+parry_006 <- data.frame(d = apa(stats_p006$d),
+                        dlow = apa(stats_p006$dlow),
+                        dhigh = apa(stats_p006$dhigh))
 
-parry_006 <- effectsize::t_to_d(t, df_error = n1+n2-2, paired = FALSE) %>%
-  mutate(analysis = "parry_006")
+# Add info for output table
+parry_006 <- parry_006 %>%
+  mutate(reference = "Parry et al. (1997)",
+       doi = "10.1177/074873049701200506",
+       analysis_code = "parry_006",
+       outcome_measured = "Change score in melatonin AUC between night 1 and night 3 of circadian phase shift study",
+       effsize_calculated = "d=-0.52, 95% CI [-0.45,1.44]")
 ```
 
-### parry_007
+#### Paper: [Increased sensitivity to light-induced melatonin suppression in premenstrual dysphoric disorder (Parry et al., 2010)](https://doi.org/10.3109/07420528.2010.503331)
 
-Conversion: t test statistic to Cohen's d.
-
+#### Analysis code: parry_007
+In this paper, the authors compared again melatonin suppression values between a NC group (N=13 women) and a PMDD group (N=10 women). For relevance to our study, here, as for Parry et al. (1997), we calculate the within-group differences in melatanon values based on cycle phase, rather than between-group differences in melatonin values between the NC and PMDD groups. We can obtain mean±SD plasma melatonin levels in Table 1. In this analysis, we look at the values in the column "Light exposure" for the NC group between the mid-follicular and late-luteal phase:
+- 58.0±31.8 (mid-follicular phase)
+- 62.7±39.6 (late-luteal phase)
+To calculate an effect size, we use the same strategy as for the previous analysis (parry_001 to parry_006), since this is also a repeated measures, within subjects design. 
 ```{r}
-# paired t-statistic = 3.07
-# n = 5
+stats_p007 <- MOTE::d.dep.t.avg(
+  m1 = 58.0,
+  m2 = 62.7,
+  sd1 = 31.8,
+  sd2 = 39.6,
+  n = 13,
+  a = 0.05
+)
 
-t <- 3.07
-n <- 8
+# print just the d value and confidence intervals
+parry_007 <- data.frame(d = apa(stats_p007$d),
+                        dlow = apa(stats_p007$dlow),
+                        dhigh = apa(stats_p007$dhigh))
 
-parry_007 <- effectsize::t_to_d(t, df_error = n-1, paired = TRUE) %>%
-  mutate(analysis = "parry_007")
+# Add info for output table
+parry_007 <- parry_007 %>%
+  mutate(reference = "Parry et al. (2010)",
+       doi = "10.3109/07420528.2010.503331",
+       analysis_code = "parry_007",
+       outcome_measured = "Plasma melatonin levels during light exposure at 200 lux in mid-follicular and late-luteal phases",
+       effsize_calculated = "d=-0.13, 95% CI [-0.68,0.41]")
 ```
 
-### parry_008
-
-Conversion: t test statistic to Cohen's d.
+#### Analysis code; parry_008
+The authors analyse % melatonin suppression differences in response to 200 lux light from 01:30 to 03:00 (light exposure window) in the mid-follicular and late-luteal phases. They report that, in the NC group (N=13 women), the menstrual phase difference was nonsignificant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754). This analysis was performed using a Wilcoxon signed-rank and Mann-Whitney U test. Since the authors provide the z value, we can use this to calculate the effect size r as [indicated in the rstatix package](https://rpkgs.datanovia.com/rstatix/reference/wilcox_effsize.html): `r = Z/sqrt(N)`
 
 ```{r}
-# paired t-statistic = 1.31
-# n = 5
+z = 0.314
+N = 13
 
-t <- 1.31
-n <- 5
+# Effect size calculation
+r = z/base::sqrt(N)
 
-parry_008 <- effectsize::t_to_d(t, df_error = n-1, paired = TRUE) %>%
-  mutate(analysis = "parry_008")
+# creating info for table ouput
+parry_008 <- data.frame(reference = "Parry et al. (2010)",
+       doi = "10.3109/07420528.2010.503331",
+       analysis_code = "parry_008",
+       outcome_measured = "% melatonin suppression differences in response to 200 lux from baseline in the mid-follicular and late-luteal phases",
+    effsize_calculated = base::round(r,2)) #round the effsize to 2 digits
 ```
 
-### parry_009
+#### Analysis code: parry_009
+The authors look at the correlation between % suppression and estradiol concentration in the late-luteal phase in NC participants. They report r= .598, 0=.219. In the paragraph were they report this result ("Reproductive Hormones"), they also mention a group size of N=6 for the NC group. This differs to what stated in their previous sections (NC group size = 13); however, since specified here, we assume that these analyses were only performed on the smaller group and thus consider N=6 for the sample size here. To calculate the effect size, we follow the [guidelines from our reference book on how to convert Pearson correlation to Cohen's d](https://matthewbjane.quarto.pub/Converting-to-Cohens-d.html#from-pearson-correlation).
 
-Conversion: eta squared from F statistics.
 
 ```{r}
-parry_009 <- effectsize::F_to_eta2(f=6.89,
-                                   df = 1,
-                                   df_error = 9,
-                                   alternative = "two.sided") %>%
-  mutate(analysis = "parry_009")
+# Effect size
+es_parry_009 <- effectsize::r_to_d(r = .598,
+                                n1 = 6,
+                                n2 = 6
+)
+
+# Adding info for output table
+parry_009 <- data.frame(
+  reference = "Parry et al. (2010)",
+  doi = "10.3109/07420528.2010.503331",
+  analysis_code = "parry_009",
+  outcome_measured = "Correlation between % melatonin suppression and estradiol levels in late-luteal phase",
+  effsize_calculated = base::round(es_parry_009,2)) #round the effsize to 2 digits
 ```
 
-### parry_010
-
-Conversion: eta squared from F statistics
+#### Analysis code: parry_010
+Similarly to parry_009, the authors here look at the correlation between % suppression and progesterone concentration in the late-luteal phase in NC participants; r=.613, p=.196. Again, we assume N=6 for reasons explained above in parry_009.
 
 ```{r}
-parry_010 <- effectsize::F_to_eta2(f=0.10,
-                                   df=1,
-                                   df_error = 11,
-                                   alternative = "two.sided") %>%
-  mutate(analysis = "parry_010")
+# Effect size
+es_parry_010 <- effectsize::r_to_d(r = .613,
+                                n1 = 6,
+                                n2 = 6
+)
+
+# Adding info for output table
+parry_010 <- data.frame(
+  reference = "Parry et al. (2010)",
+  doi = "10.3109/07420528.2010.503331",
+  analysis_code = "parry_010",
+  outcome_measured = "Correlation between % melatonin suppression and progesterone levels in late-luteal phase",
+  effsize_calculated = base::round(es_parry_010,2)) #round the effsize to 2 digits
+```
+
+#### Analysis code: parry_011
+The authors also report the correlation between % suppression and progesterone concentration in the mid-follicular phase in NC participants; r=.455, p=.369. Again, we assume N=6 for reasons explained above in parry_009.
+
+```{r}
+# Effect size
+es_parry_011 <- effectsize::r_to_d(r = .455,
+                                n1 = 6,
+                                n2 = 6
+)
+
+# Adding info for output table
+parry_010 <- data.frame(
+  reference = "Parry et al. (2010)",
+  doi = "10.3109/07420528.2010.503331",
+  analysis_code = "parry_011",
+  outcome_measured = "Correlation between % melatonin suppression and progesterone levels in mid-follicular phase",
+  effsize_calculated = base::round(es_parry_011,2)) #round the effsize to 2 digits
 ```
