@@ -12,19 +12,20 @@ editor_options:
 ## Aim
 
 This script calculates effect sizes from published studies on sex- and hormone-related differences in non-visual responses to light exposure.
-Specifically, we will be calculating effect sizes from results of the 12 studies analysed in the Open Research Knowledge Graph (ORKG) comparison by [Guidolin et al (2024)](https://doi.org/10.48366/R733094).
+Specifically, we will be calculating effect sizes from results of the 12 studies analysed in the Open Research Knowledge Graph (ORKG) comparison [Guidolin et al (2024)](https://doi.org/10.48366/R733094).This script also outputs a table where each study, analysis, outcome measures and calculated effect size are summarised.
 
 ## Approach
 
 To estimate effect sizes from each study, we will be following guidelines from the interactive book ["Guide to Effect Sizes and Confidence Intervals" (Jané et al., 2024)](http://dx.doi.org/10.17605/OSF.IO/D8C4G).
-When a different approach is used to calculate effect sizes, it is explicitly specified prior to implementation.
+When a different approach is used to calculate effect sizes, it is explicitly specified prior to implementation in code.
 
 ## Structure of this R Markdown
 
 ### Choice of nomenclature
 
 To standardise the way effect sizes are calculated, Group 1 always corresponds to women, or females, and Group 2 always corresponds to men, or males, depending on whether how the terminology used in the individual study.
-We acknowledge that the terms sex and gender are not interchangles, however, due to clear definitions and lack of consistent use within individual papers, we refer to "sex differences" or "gender differences" based on the terminology used in the individual paper and analysis.
+In papers were differences between mentruals phases, rather than sex, are calculated, the follicular phase corresponds to Group 1 and the luteal phase corresponds to Group 2.
+We acknowledge that the terms sex and gender are not interchangeable, however, due to unclear definitions and lack of consistent use between papers as well as within individual papers, we refer to "sex differences" or "gender differences" based on the terminology used in the individual paper and analysis.
 For each analysis of interest carried in a given study, an ascending analysis code is assigned to it (e.g. `vidafar_001` refers to the first analysis in the Vidafar et al. (2024) paper).
 Note that in case of papers which have the same first author (e.g. Nathan), the numbers in the analysis code continue in ascending order regardless of the paper.
 
@@ -72,7 +73,7 @@ vidafar_001 <- vidafar_001 %>%
   mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_001",
-         outcome_measured = "Melatonin concentration in 400 lux condition",
+         outcome_measured = "Melatonin concentration in women and men under 400 lux condition",
          effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
 
 ```
@@ -109,15 +110,15 @@ vidafar_002 <- vidafar_002 %>%
    mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_002",
-         outcome_measured = "Melatonin concentration in 2000 lux condition",
+         outcome_measured = "Melatonin concentration in women and men under 2000 lux condition",
          effsize_calculated = "d=0.85, 95% CI[0.13, 1.55]")
 
 ```
 
 #### Analysis code: vidafar_003
 
-In this analysis, melatonin suppresson is calculated as a function of sex related factors, to indentify which se-related factors predict melatonin suppression.
-This is done using a Tobit regression model with primary predictor variable(s): (i) sex, (ii) menstrual phase (women only), (iii) estradiol and progesterone levels (women only), and (iv) testosterone (men only, using the mean of the two testosterone samples).
+In this analysis, melatonin suppresson is calculated as a function of sex related factors, to indentify which sex-related factors predict melatonin suppression.
+This is done using a tobit regression model with primary predictor variable(s): (i) sex, (ii) menstrual phase (women only), (iii) estradiol and progesterone levels (women only), and (iv) testosterone (men only, using the mean of the two testosterone samples).
 The adjusted model included age, sex and phase angle of habitual bedtime to DLMO.
 The authors report the beta coefficient of the unadjusted and adjusted regression model for sex as main predictor of melatonin suppression (unstandardised coefficients): β=.09±.06, p=.14 and β=.13±.06, p=.04 (unadjusted and adjusted models, respectively).
 As this information is not sufficient to calculate an effect size, we do not include this analysis in our table overview.
@@ -131,17 +132,17 @@ Just as for vidafar_003, we are missing the whole model equation to determine ef
 
 This analysis looks at the correlation between testosterone levels in men (N=16, all male) at two light intensities and melatonin suppression using Pearson's correlation (100 lux: r=0.21, 200 lux: r=.-20).
 Since the variables in this correlations are both continuous (melatonin suppression and testosterone levels), this is not a point-biserial correlation.
-Hence, we cannot use the approach described in our reference book.
-Mathur & VanderWeele (2021) [<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7906439/#R1>], suggest a different approach which uses the function r_to_d from the MetaUtility package:
+Hence, we cannot use the [approach](https://matthewbjane.quarto.pub/Converting-to-Cohens-d.html#from-pearson-correlation) described in our reference book.
+Mathur & VanderWeele (2021) [<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7906439/#R1>]suggest a different approach which uses the function `r_to_d` from the MetaUtility package:
 
 ```{r}
 # Example use
-r_to_d(r,
-       sx, # sample sd of X
-       delta,
-       N = NA,
-       Ns = N,
-       sx.known = FALSE)
+# r_to_d(r,
+#       sx, # sample sd of X
+#       delta,
+#       N = NA,
+#       Ns = N,
+#       sx.known = FALSE)
 ```
 
 However, as we missing a measure of variability (sample sd of X), we cannot use this function.
@@ -153,8 +154,11 @@ As for previous analyses, we exclude this one from our overview table.
 
 This analysis looks at sex differences in melatonin suppression percentage (N=12, 6 women).
 The start of the light exposure (02:00) is considered as 100%, and the plasma melatonin values at timepoints 03:00, 03:30 and 04:00 were converted into percentages relative to this 100%.
-The results are reported as means, however no SD or SEM is provided: - 53% vs 13.8% at 3.00h, p\<0.05, - 64% vs 25.8% at 3.30h, p\<0.05, - 70.5% vs 26.3% at 4.00h, p\<0.04 From Figure 2, we can however manually extract the data point corresponding to each error bar using [WebPlotDigitizer](https://automeris.io/) and exporting the csv containing the measured data points.
-This would allow us to calculate an effect size.
+The results are reported as means, however no SD or SEM is provided:
+- 53% vs 13.8% at 3.00h,p<0.05 (women vs men),
+- 64% vs 25.8% at 3.30h,p<0.05 (women vs men),
+- 70.5% vs 26.3% at 4.00h,p<0.04 (women vs men)
+From Figure 2, we can however manually extract the data point corresponding to each error bar using [WebPlotDigitizer](https://automeris.io/) and exporting the csv containing the measured data points. This then allows us to calculate an effect size.
 First, we import these csv files.
 
 ```{r}
@@ -178,11 +182,15 @@ mont_fig02_men <- mont_fig02_men %>%
 # Women
 mont_fig02_women <- mont_fig02_women %>%
   mutate(light_sens = base::abs(light_mean - dark_mean)) # take absolute value of the difference  
+
+## Note the the mean value for women at 03:30 does not add up to the one reported in the paper?
+
+### Once we have the datapoints for each timepoint (03:00, 03:30, 04:00), how to deal with the extracted standard deviations?
 ```
 
 #### Analysis code: monteleone_002
 
-Same problem as above?
+Area under the curve - Same problem as above?
 
 #### Analysis code: monteleone_003
 
@@ -190,7 +198,7 @@ This analysis looks at melatonin suppression as a function of gender, using a re
 The authors report the F statistic for the ANOVA with main effects for gender, F(1,10) = 0.422, ns.
 According to our reference book, the `eta_squared()` function from the `effectsize` package should be used to return the effect size for a two-way repeated measures ANOVA.
 However, for this function, one would need the print-out of the whole statistical model.
-Since we do not have this, but only the F statistic, we follow the [guidelines from the effectsize package itself](https://easystats.github.io/effectsize/articles/from_test_statistics.html#partial-percent-variance-explained%3E) to convert the F value to the eta square.
+Since we do not have this, but only the F statistic, we follow the [guidelines from the effectsize package itself](https://easystats.github.io/effectsize/articles/from_test_statistics.html#partial-percent-variance-explained%3E) to convert the F value to eta square.
 
 ```{r}
 #F statistic reported: F(1,10) = 0.422
@@ -206,22 +214,21 @@ monteleone_003 <- monteleone_003 %>%
   mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_003",
-         outcome_measured = "Melatonin suppression as a function of gender",
-         effsize_calculated = "ηp2=0.04, 95% CI[0, 0.40]")
+         outcome_measured = "Effect of gender on melatonin suppression",
+         effsize_calculated = "ηp2=0.04, 95% CI[0,0.40]")
 ```
 
 #### Paper: [Effects of light on melatonin production (Boyce & Kennaway, 1987)](https://www.sciencedirect.com/science/article/pii/0006322387901697?via%3Dihub)
 
 #### Analysis code: boyce_kennaway_001
 
-This analysis used repeated measures ANOVA with main effect of sex to understand melatonin levels as a function of sex at different light intensities (N=10, 5 women).
-The F statistic reported for sex differentiation in melatonin suppression averaged across illuminance and time is F=0.003.
+This analysis used repeated measures ANOVA with main effect of sex to assess sex differences in melatonin levels at different light intensities (N=10, 5 women). The authors report the F statistic for sex differences in melatonin suppression, averaged across illuminance and time, F=0.003.
 Since no degrees of freedom are reported here, and we do not have the entire model print-out, we cannot estimate an effect size for this analysis.
 
 ### Analysis code: boyce_kennaway_002
 
 The authors report mean melatonin levels for each of the four light intensities investigated in Table 1 (mean pmol/liter±SD, again N=10, 5 women).
-From this table, we extract information from the 1000 lux condition at the 90 minute timepoint, since this combination is the most relevant for the study we are designing and estimating the power for.
+From this table, we extract information from the 1000 lux condition at the 90 minute timepoint, since this combination is the most relevant for the study we are designing and estimating the power for. Specifically, we will apply a light of approximately 400 lux as stimulus, hence the 1000 lux condition in the study by Boyce & Kennaway is the closest to ours in terms of illuminance levels.
 We make the assumption that the values in the table under the columns "M" and "F" correspond to males and females, and we ignore the middle value between these two columns since it is unclear what it represents.
 Hence, the melatonin values of interests are: 179.7±119.7 (females) and 202.6±136.2 (males).
 To calculate an effect size, we use Cohen's d for two independent groups design.
@@ -251,7 +258,7 @@ boyce_kennaway_002 <- boyce_kennaway_002 %>%
    mutate(reference = "Boyce & Kennaway (1987)",
          doi = "10.1016/0006-3223(87)90169-7",
          analysis_code = "boyce_kennaway_002",
-         outcome_measured = "Melatonin concentration at 1000 lux after 90 minutes exposure",
+         outcome_measured = "Melatonin concentration in females and meales under 1000 lux condition",
          effsize_calculated = "d=-0.18, 95% CI[-1.4,1.1]")
 
 ```
@@ -261,7 +268,7 @@ boyce_kennaway_002 <- boyce_kennaway_002 %>%
 #### Analysis code: nathan_001
 
 The authors investigate the effect of gender on melatonin concentration under 200 lux (N=43, 21 females).
-They perform a repeated measures ANOVA for the effect of gender on melatonin suppression, F(1,41)= 0.00, p\>0.1.
+They perform a repeated measures ANOVA for the effect of gender on melatonin suppression, and report F(1,41)= 0.00, p>0.1.
 We convert this F value to eta squared using the effectsize package, as done in monteleone_003.
 
 ```{r}
@@ -276,14 +283,14 @@ nathan_001 <- nathan_001 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_001",
-         outcome_measured = "Melatonin suppression in 200 lux condition as function of gender",
+         outcome_measured = "Effect of gender on melatonin suppression in 200 lux condition",
          effsize_calculated = "ηp2=0, 95% CI[0,0]")
 ```
 
 #### Analysis code: nathan_002
 
-The authors compare the area under the curve (AUC) of melatonin concentration (pg/ml) from 21:00 onwards in females and males (N=43, 21 females), under the 200 lux condition (N=43, 21 females).
-They use a Student t-test for this analysis and report the mean±SD values of the AUC (pg/ml/h) in Table 1: 357.1±262.7 (females) and 366.8±147.9 (males) (t(41) = 0.15; p \>0.1).
+The authors compare the area under the curve (AUC) of melatonin concentration (pg/ml) from 21:00 onwards in females and males (N=43, 21 females), under the 200 lux condition.
+They use a Student t-test for this analysis and report the mean±SD values of the AUC (pg/ml/h) in Table 1: 357.1±262.7 (females) and 366.8±147.9 (males) (t(41) = 0.15; p>0.1).
 We use Cohen's d for two independent groups design to calculate an effect size.
 
 ```{r}
@@ -310,14 +317,14 @@ nathan_002 <- nathan_002 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_002",
-         outcome_measured = "Area under the curve of melatonin concentration at 200 lux",
+         outcome_measured = "Sex difference in area under the curve of melatonin concentration at 200 lux",
     effsize_calculated = "d=-0.046, 95% CI[-0.6,0.6]"
   )
 ```
 
 #### Analysis code: nathan_003
 
-The authors also perform a t-test on the % melatonin suppression in the 200 lux condition between females (14.5±15.2) and males (16.9±18), t(41)=0.47; p\>0.1.
+The authors also perform a t-test on the % melatonin suppression in the 200 lux condition between females (14.5±15.2) and males (16.9±18), t(41)=0.47; p>0.1.
 The sample size is again N=43 (21 females) as for previous analyses.
 We can calculate an effect size for this analysis using Cohen's d for two independent groups design.
 
@@ -346,7 +353,7 @@ nathan_003 <- nathan_003 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_003",
-         outcome_measured = "Mean melatonin suppression (%) for females and males at 200 lux",
+         outcome_measured = "Sex differences in mean melatonin suppression (%) at 200 lux",
     effsize_calculated = "d=-0.14, 95% CI [-0.74,0.46]"
   )
 
@@ -355,12 +362,9 @@ nathan_003 <- nathan_003 %>%
 #### Analysis code: nathan_004
 
 The authors investigate the effect of 500 lux light exposure on melatonin concentration in N=11 participants (7 females).
-They calculate differences in the mean AUC in melatonin concentration for females (mean±SD: 320.7±103.7pg/ml/hr) and males (mean±SD: 286.5±119pg/ml/hr) using a Mann-Whitney U test, U = 10; p\>0.1.
-Our reference book ([section 12.3](https://matthewbjane.quarto.pub/Non-Parametric-Effect-Sizes.html#sec-odds)) suggests using the `ses_calc` function from the TOSTER package to calculate an estimate of the effect size.
-However, we would need the raw data to perform this calculation.
-An alternative approach, offered by the rstatix package is to use the function `wilcox_effsize`.
-However, we also do not have a formula here which we need to calculate the effect size.
-Henc, we decide to use Cohen's d for two independent groups design to calculate an effect size of this comparison.
+They calculate differences in the mean AUC in melatonin concentration for females (mean±SD: 320.7±103.7pg/ml/hr) and males (mean±SD: 286.5±119pg/ml/hr) using a Mann-Whitney U test, U = 10; p>0.1.
+Our reference book ([section 12.3](https://matthewbjane.quarto.pub/Non-Parametric-Effect-Sizes.html#sec-odds) suggests using the `ses_calc` function from the TOSTER package to calculate an effect size for non-parametric tests such as the Mann-Whitney-U test. However, we would need the raw data to perform this calculation. An alternative approach, offered by the rstatix package is to use the function `wilcox_effsize`. However, we also do not have a formula, which we need as input to this function.
+Hence, we decide to use Cohen's d for two independent groups design to calculate an effect size of this comparison.
 
 ```{r}
 # mean and SD AUC females 320.7±103.7pg/ml/hr 
@@ -386,15 +390,15 @@ nathan_004 <- nathan_004 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_004",
-         outcome_measured = "Area under the curve of melatonin concentration at 500 lux",
-         effsize_calculated = "d=0.31, 95% CI [-0.93, 1.54]"
+         outcome_measured = "Sex differences in area under the curve of melatonin concentration at 500 lux",
+         effsize_calculated = "d=0.31, 95% CI [-0.93,1.54]"
   )
 ```
 
 #### Analysis code: nathan_005
 
 This analysis is related to nathan_004: the authors investigate the effect of 500 lux light exposure on melatonin concentration in N=11 participants (7 females).
-Here, they calculate differences in the mean % melatonin suppression for females (mean±SD: 44.9±8.4) and males (mean±SD: 35.0±11.9) using a Mann-Whitney U test, U = 10; p\>0.1.
+Here, they calculate differences in the mean % melatonin suppression for females (mean±SD: 44.9±8.4) and males (mean±SD: 35.0±11.9) using a Mann-Whitney U test, U = 10; p>0.1.
 As we encounter the same issues as for nathan_004 in calculating an effect size, here we also use Cohen's d for two independent groups design.
 
 ```{r}
@@ -421,8 +425,8 @@ nathan_005 <- nathan_005 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_005",
-         outcome_measured = "Mean melatonin suppression (%) for females and males at 500 lux",
-         effsize_calculated = "d=1.0, 95% CI [-0.3, 2.3]")
+         outcome_measured = "Sex differences in mean melatonin suppression (%) at 500 lux",
+         effsize_calculated = "d=1.0, 95% CI [-0.3,2.3]")
 
 
 ```
@@ -430,6 +434,14 @@ nathan_005 <- nathan_005 %>%
 #### Paper: [The effect of gender on the melatonin suppression by light: a dose response relationship (Nathan et al., 2000)](10.1007/s007020050022)
 
 ### nathan_006 - to be discussed in person
+
+```{r}
+## The slope represents the rate of change in DV (melatonin suppression) for a unit increase in the independent variable (light intensity) -- reflects strength of relationship
+
+## The intercept represents the value of the DV when IV is zero -- reflects baseline starting point (?) 
+
+```
+
 
 Conversion: eta squared from F statistics.
 
@@ -462,7 +474,7 @@ nathan_007 <- nathan_007 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_007",
-         outcome_measured = "Melatonin concentration at 3 stages of the menstrual cycle (luteal, follicular, mestrual) under 200 lux",
+         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, mestrual) on melatonin concentration under 200 lux",
          effsize_calculated = "np2=0.06, 95% CI [0,0.36]")
 
 ```
@@ -486,7 +498,7 @@ nathan_008 <- nathan_008 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_008",
-         outcome_measured = "Melatonin suppression at 3 stages of the menstrual cycle (luteal, follicular, mestrual) under 200 lux",
+         outcome_measured = "Effect of menstrual cycle (luteal, follicular, menstrual) on melatonin suppression under 200 lux",
          effsize_calculated = "np2=0.006, 95% CI [0,0.03]")
 
 ```
@@ -496,8 +508,8 @@ nathan_008 <- nathan_008 %>%
 #### Analysis code: fan_001
 
 This analysis looks at relative pupil constriction amplitude upon light stimulus of varying intensity in females and males (N=25, 23 females).
-The authors use a mixed facto ANOVA with gender and test time as between-subject factors, and light colour, stimulus condition and measured eye as within-subject factors.
-They report significant interactions of gender with stimulus condition (p\>0.0001).
+The authors use a mixed factor ANOVA with gender and test time as between-subject factors, and light colour, stimulus condition and measured eye as within-subject factors.
+They report significant interactions of gender with stimulus condition (p>0.0001).
 However, no F statistic is reported, which makes it impossible to calculate an effect size for this analysis.
 Hence, we do not include it in our output table.
 
@@ -580,10 +592,12 @@ mutate(reference = "Chellappa et al. (2017)",
 #### Paper: [Blunted Phase-Shift Responses to Morning Bright Light in Premenstrual Dysphoric Disorder (Parry et al., 1997)](10.1177/074873049701200506)
 
 #### Analysis code: parry_001
-This analysis looks at mean melatonin levels during a melatonin suppression study (500 lux) in naturally cycling individuals (NC group) and individuals with a diagnosis of premenstrual dysphoric disorder (PMDD group) in the follicular and luteal phase. Since looking at group differences is not relevant for our study, we focus on the available data on melatonin concentrations in the follicular vs luteal phases in the NC group (N=5 women). The mean±SD values for these during light suppression are reported in Table 1a:
-- 18.6±15.7 (follicular phase)
-- 17.3±8.8 (luteal phase)
-The [guidelines](https://matthewbjane.quarto.pub/Standardized-Mean-Differences.html#sec-repeated-measures-drm) in our reference book for repeated measures, within-subject designs where no correlation between conditions is known (as for our case), recommend using the function `d.dep.t.avg` from the MOTE package. The 
+
+This analysis looks at mean melatonin levels during a melatonin suppression study (500 lux) in naturally cycling individuals (NC group) and individuals with a diagnosis of premenstrual dysphoric disorder (PMDD group) in the follicular and luteal phase.
+Since looking at group differences is not relevant for our study, we focus on the available data on melatonin concentrations in the follicular vs luteal phases in the NC group (N=5 women).
+The mean±SD values for these during light suppression are reported in Table 1a: - 18.6±15.7 (follicular phase);
+- 17.3±8.8 (luteal phase) The [guidelines](https://matthewbjane.quarto.pub/Standardized-Mean-Differences.html#sec-repeated-measures-drm) in our reference book for repeated measures, within-subject designs where no correlation between conditions is known (as for our case), recommend using the function `d.dep.t.avg` from the MOTE package.
+The
 
 ```{r}
 # Condition 1 (follicular phase) Mean = 18.6, SD = 15.7, N = 5
@@ -613,11 +627,13 @@ parry_001 <- parry_001 %>%
 ```
 
 ### Analysis code: parry_002
-The authors report mean±SD melatonin values for each night of Study 2 in PMDD as well as NC participants in Table 2. Although the authors mainly perform between-group analyses, this tables provides us with information to calculate effect sizes of parameters of interest within the NC group (N=5 women). In this analysis, we calculate the effect size of the change score nights 1 to 3 (see column in Table 2) between the follicular andluteal phase. To keep nomenclature consistent with parry_001, the follicular phase is considered "group 1" or "phase 1", whereas the luteal phase is considered "group 2" or "phase 2". 
-Change score if offset time:
-- 0.60±0.65 (military time, follicular phase)
+
+The authors report mean±SD melatonin values for each night of Study 2 in PMDD as well as NC participants in Table 2.
+Although the authors mainly perform between-group analyses, this tables provides us with information to calculate effect sizes of parameters of interest within the NC group (N=5 women).
+In this analysis, we calculate the effect size of the change score nights 1 to 3 (see column in Table 2) between the follicular and luteal phase. Change score of offset time: 
+- 0.60±0.65 (military time, follicular phase),
 - 0.70±0.91 (military time, luteal phase)
-We take the same approach as parry_001 to calculate an effect size for this analysis, since we are facing the same type of data: repeated measures and within group.
+We take the same approach as parry_001 to calculate an effect size for this analysis, since we are facing the same type of data: repeated measures and within group design.
 
 ```{r}
 
@@ -646,9 +662,11 @@ parry_002 <- parry_002 %>%
 ```
 
 #### Analysis code: parry_003
+
 From Table 2, we can also extract the change score (delta) in onset time of melatonin between night 1 and night 2 of the circadian phase shift study:
-- 0.20±0.27 (military time, follicular phase)
+- 0.20±0.27 (military time, follicular phase),
 - 0.40±0.65 (military time, luteal phase)
+
 ```{r}
 stats_p003 <- MOTE::d.dep.t.avg(
   m1 = 0.20,
@@ -674,9 +692,11 @@ parry_003 <- parry_003 %>%
 ```
 
 #### Analysis code: parry_004
+
 From Table 2, we extract the change score (delta) in duration (hours) of melatonin between night 1 and night 2 of the circadian phase shift study:
-- -0.10±0.76 (hours, follicular phase)
+- -0.10±0.76 (hours, follicular phase),
 - -0.30±1.03 (hours, luteal phase)
+
 ```{r}
 stats_p004 <- MOTE::d.dep.t.avg(
   m1 = -0.10,
@@ -702,9 +722,11 @@ parry_004 <- parry_004 %>%
 ```
 
 #### Analysis code: parry_005
+
 From Table 2, we extract the change score (delta) in melatonin peak (pg/ml) between night 1 and night 2 of the circadian phase shift study:
-- -5.29±9.00 (follicular phase)
+- -5.29±9.00 (follicular phase),
 - -0.83±4.50 (luteal phase)
+
 ```{r}
 stats_p005 <- MOTE::d.dep.t.avg(
   m1 = -5.29,
@@ -730,9 +752,11 @@ parry_005 <- parry_005 %>%
 ```
 
 #### Analysis code: parry_006
+
 From Table 2, we extract the change score (delta) in melatonin area under the curve (AUC, pg/ml) between night 1 and night 2 of the circadian phase shift study:
-- -662±1495 (follicular phase)
+- -662±1495 (follicular phase),
 - -2388±5138 (luteal phase)
+
 ```{r}
 stats_p006 <- MOTE::d.dep.t.avg(
   m1 = -662,
@@ -760,10 +784,16 @@ parry_006 <- parry_006 %>%
 #### Paper: [Increased sensitivity to light-induced melatonin suppression in premenstrual dysphoric disorder (Parry et al., 2010)](https://doi.org/10.3109/07420528.2010.503331)
 
 #### Analysis code: parry_007
-In this paper, the authors compared again melatonin suppression values between a NC group (N=13 women) and a PMDD group (N=10 women). For relevance to our study, here, as for Parry et al. (1997), we calculate the within-group differences in melatanon values based on cycle phase, rather than between-group differences in melatonin values between the NC and PMDD groups. We can obtain mean±SD plasma melatonin levels in Table 1. In this analysis, we look at the values in the column "Light exposure" for the NC group between the mid-follicular and late-luteal phase:
-- 58.0±31.8 (mid-follicular phase)
+
+In this paper, the authors compared again melatonin suppression values between a NC group (N=13 women) and a PMDD group (N=10 women).
+For relevance to our study, here, as for Parry et al. (1997), we calculate the within-group differences in melatanin values based on cycle phase, rather than between-group differences in melatonin values between the NC and PMDD groups.
+We can obtain mean±SD plasma melatonin levels in Table 1.
+In this analysis, we look at the values in the column "Light exposure" for the NC group between the mid-follicular and late-luteal phase:
+- 58.0±31.8 (mid-follicular phase),
 - 62.7±39.6 (late-luteal phase)
-To calculate an effect size, we use the same strategy as for the previous analysis (parry_001 to parry_006), since this is also a repeated measures, within subjects design. 
+
+To calculate an effect size, we use the same strategy as for the previous analysis (parry_001 to parry_006), since this is also a repeated measures, within subjects design.
+
 ```{r}
 stats_p007 <- MOTE::d.dep.t.avg(
   m1 = 58.0,
@@ -784,12 +814,16 @@ parry_007 <- parry_007 %>%
   mutate(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_007",
-       outcome_measured = "Plasma melatonin levels during light exposure at 200 lux in mid-follicular and late-luteal phases",
+       outcome_measured = "Mean plasma melatonin levels during light exposure at 200 lux in mid-follicular and late-luteal phases",
        effsize_calculated = "d=-0.13, 95% CI [-0.68,0.41]")
 ```
 
 #### Analysis code; parry_008
-The authors analyse % melatonin suppression differences in response to 200 lux light from 01:30 to 03:00 (light exposure window) in the mid-follicular and late-luteal phases. They report that, in the NC group (N=13 women), the menstrual phase difference was nonsignificant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754). This analysis was performed using a Wilcoxon signed-rank and Mann-Whitney U test. Since the authors provide the z value, we can use this to calculate the effect size r as [indicated in the rstatix package](https://rpkgs.datanovia.com/rstatix/reference/wilcox_effsize.html): `r = Z/sqrt(N)`
+
+The authors analyse % melatonin suppression differences in response to 200 lux light from 01:30 to 03:00 (light exposure window) in the mid-follicular and late-luteal phases.
+They report that, in the NC group (N=13 women), the menstrual phase difference was nonsignificant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754).
+This analysis was performed using a Wilcoxon signed-rank and Mann-Whitney U test.
+Since the authors provide the z value, we can use this to calculate the effect size r as [indicated in the rstatix package](https://rpkgs.datanovia.com/rstatix/reference/wilcox_effsize.html): `r = Z/sqrt(N)`
 
 ```{r}
 z = 0.314
@@ -807,8 +841,12 @@ parry_008 <- data.frame(reference = "Parry et al. (2010)",
 ```
 
 #### Analysis code: parry_009
-The authors look at the correlation between % suppression and estradiol concentration in the late-luteal phase in NC participants. They report r= .598, 0=.219. In the paragraph were they report this result ("Reproductive Hormones"), they also mention a group size of N=6 for the NC group. This differs to what stated in their previous sections (NC group size = 13); however, since specified here, we assume that these analyses were only performed on the smaller group and thus consider N=6 for the sample size here. To calculate the effect size, we follow the [guidelines from our reference book on how to convert Pearson correlation to Cohen's d](https://matthewbjane.quarto.pub/Converting-to-Cohens-d.html#from-pearson-correlation).
 
+The authors look at the correlation between % suppression and estradiol concentration in the late-luteal phase in NC participants.
+They report r= .598, 0=.219.
+In the paragraph were they report this result ("Reproductive Hormones"), they also mention a group size of N=6 for the NC group.
+This differs to what stated in their previous sections (NC group size = 13); however, since specified here, we assume that these analyses were only performed on the smaller group and thus consider N=6 for the sample size here.
+To calculate the effect size, we follow the [guidelines from our reference book on how to convert Pearson correlation to Cohen's d](https://matthewbjane.quarto.pub/Converting-to-Cohens-d.html#from-pearson-correlation).
 
 ```{r}
 # Effect size
@@ -827,7 +865,9 @@ parry_009 <- data.frame(
 ```
 
 #### Analysis code: parry_010
-Similarly to parry_009, the authors here look at the correlation between % suppression and progesterone concentration in the late-luteal phase in NC participants; r=.613, p=.196. Again, we assume N=6 for reasons explained above in parry_009.
+
+Similarly to parry_009, the authors here look at the correlation between % suppression and progesterone concentration in the late-luteal phase in NC participants; r=.613, p=.196.
+Again, we assume N=6 for reasons explained above in parry_009.
 
 ```{r}
 # Effect size
@@ -846,7 +886,9 @@ parry_010 <- data.frame(
 ```
 
 #### Analysis code: parry_011
-The authors also report the correlation between % suppression and progesterone concentration in the mid-follicular phase in NC participants; r=.455, p=.369. Again, we assume N=6 for reasons explained above in parry_009.
+
+The authors also report the correlation between % suppression and progesterone concentration in the mid-follicular phase in NC participants; r=.455, p=.369.
+Again, we assume N=6 for reasons explained above in parry_009.
 
 ```{r}
 # Effect size
