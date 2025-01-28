@@ -73,7 +73,7 @@ vidafar_001 <- vidafar_001 %>%
   mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_001",
-         outcome_measured = "Melatonin concentration in women and men under 400 lux condition",
+         outcome_measured = "Sex difference in melatonin concentration at 400 lux",
          effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
 
 ```
@@ -110,7 +110,7 @@ vidafar_002 <- vidafar_002 %>%
    mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_002",
-         outcome_measured = "Melatonin concentration in women and men under 2000 lux condition",
+         outcome_measured = "Sex difference in melatonin concentration at 2000 lux",
          effsize_calculated = "d=0.85, 95% CI[0.13, 1.55]")
 
 ```
@@ -163,11 +163,11 @@ First, we import these csv files.
 
 ```{r}
 # Importing extracted data for Figure 2 top panel (men)
-mont_fig02_men <- read.csv("Z:/shine/preregistration/power_analysis/monteleone_001_men.csv",
+mont_fig02_men <- read.csv(here::here("extracted_data", "monteleone_001_men.csv"),
                            sep = ";")
   
 # Importing extracted data for Figure 2 bottom panel (women)
-mont_fig02_women <- read.csv("Z:/shine/preregistration/power_analysis/monteleone_001_women.csv",
+mont_fig02_women <- read.csv(here::here("extracted_data", "monteleone_001_women.csv"),
                            sep = ";")
 
 ```
@@ -206,8 +206,7 @@ Since we do not have this, but only the F statistic, we follow the [guidelines f
 monteleone_003 <- effectsize::F_to_eta2(f = 0.422,
           df = 1,
           df_error = 10,
-          alternative = "two.sided") %>%
-  mutate(analysis = "monteleone_003")
+          alternative = "two.sided") 
 
 # Add info for output table
 monteleone_003 <- monteleone_003 %>%
@@ -258,8 +257,8 @@ boyce_kennaway_002 <- boyce_kennaway_002 %>%
    mutate(reference = "Boyce & Kennaway (1987)",
          doi = "10.1016/0006-3223(87)90169-7",
          analysis_code = "boyce_kennaway_002",
-         outcome_measured = "Melatonin concentration in females and meales under 1000 lux condition",
-         effsize_calculated = "d=-0.18, 95% CI[-1.4,1.1]")
+         outcome_measured = "Sex difference in melatonin concentration at 1000 lux",
+         effsize_calculated = "d=-0.18, 95% CI[-1.4,1.07]")
 
 ```
 
@@ -283,7 +282,7 @@ nathan_001 <- nathan_001 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_001",
-         outcome_measured = "Effect of gender on melatonin suppression in 200 lux condition",
+         outcome_measured = "Effect of gender on melatonin suppression at 200 lux",
          effsize_calculated = "ηp2=0, 95% CI[0,0]")
 ```
 
@@ -318,7 +317,7 @@ nathan_002 <- nathan_002 %>%
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_002",
          outcome_measured = "Sex difference in area under the curve of melatonin concentration at 200 lux",
-    effsize_calculated = "d=-0.046, 95% CI[-0.6,0.6]"
+    effsize_calculated = "d=-0.046, 95% CI[-0.6,0.55]"
   )
 ```
 
@@ -474,8 +473,8 @@ nathan_007 <- nathan_007 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_007",
-         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, mestrual) on melatonin concentration under 200 lux",
-         effsize_calculated = "np2=0.06, 95% CI [0,0.36]")
+         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, mestrual) on melatonin concentration at 200 lux",
+         effsize_calculated = "ηp2=0.06, 95% CI [0,0.36]")
 
 ```
 
@@ -498,8 +497,8 @@ nathan_008 <- nathan_008 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_008",
-         outcome_measured = "Effect of menstrual cycle (luteal, follicular, menstrual) on melatonin suppression under 200 lux",
-         effsize_calculated = "np2=0.006, 95% CI [0,0.03]")
+         outcome_measured = "Effect of menstrual cycle (luteal, follicular, menstrual) on melatonin suppression at 200 lux",
+         effsize_calculated = "ηp2=0.006, 95% CI [0,0.03]")
 
 ```
 
@@ -542,7 +541,7 @@ chellappa_002 <- chellappa_002 %>%
          doi = "10.1038/s41598-017-13973-1",
          analysis_code = "chellappa_002",
          outcome_measured = "Sex differences in brightness perception between 6500K and 2500K light conditions",
-         effsize_calculated = "np2=0.13, 95% CI [0,0.36]")
+         effsize_calculated = "ηp2=0.13, 95% CI [0,0.36]")
 
 ```
 
@@ -622,7 +621,7 @@ parry_001 <- parry_001 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_001",
-       outcome_measured = "Mean melatonin values during light exposure (500 lux) during the follicular and luteal phase",
+       outcome_measured = "Differences in mean melatonin values at 500 lux during the follicular and luteal phase",
        effsize_calculated = "d=0.1, 95% CI [-0.78,0.98]")
 ```
 
@@ -656,8 +655,8 @@ parry_002 <- parry_002 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_002",
-       outcome_measured = "Change score in melatonin offset time between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=-0.13, 95% CI [-1.01,0.76]")
+       outcome_measured = "Change score in melatonin offset time between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       effsize_calculated = "d=-0.13, 95% CI [-1,0.76]")
 
 ```
 
@@ -687,7 +686,7 @@ parry_003 <- parry_003 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_003",
-       outcome_measured = "Change score in melatonin onset time between night 1 and night 3 of circadian phase shift study",
+       outcome_measured = "Change score in melatonin onset time between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
        effsize_calculated = "d=-0.44, 95% CI [-1.34,0.51]")
 ```
 
@@ -717,7 +716,7 @@ parry_004 <- parry_004 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_004",
-       outcome_measured = "Change score in melatonin duration between night 1 and night 3 of circadian phase shift study",
+       outcome_measured = "Change score in melatonin duration between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
        effsize_calculated = "d=0.22, 95% CI [-0.68,1.01]")
 ```
 
@@ -747,7 +746,7 @@ parry_005 <- parry_005 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_005",
-       outcome_measured = "Change score in melatonin peak between night 1 and night 3 of circadian phase shift study",
+       outcome_measured = "Change score in melatonin peak between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
        effsize_calculated = "d=-0.66, 95% CI [-1.61,0.35]")
 ```
 
@@ -777,7 +776,7 @@ parry_006 <- parry_006 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_006",
-       outcome_measured = "Change score in melatonin AUC between night 1 and night 3 of circadian phase shift study",
+       outcome_measured = "Change score in melatonin AUC between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
        effsize_calculated = "d=-0.52, 95% CI [-0.45,1.44]")
 ```
 
@@ -830,14 +829,15 @@ z = 0.314
 N = 13
 
 # Effect size calculation
-r = z/base::sqrt(N)
+r <- (z/base::sqrt(N)) %>%
+     base::round(2) #rounding to 2 digits
 
 # creating info for table ouput
 parry_008 <- data.frame(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_008",
        outcome_measured = "% melatonin suppression differences in response to 200 lux from baseline in the mid-follicular and late-luteal phases",
-    effsize_calculated = base::round(r,2)) #round the effsize to 2 digits
+    effsize_calculated = paste0("r=",r)) 
 ```
 
 #### Analysis code: parry_009
@@ -853,7 +853,8 @@ To calculate the effect size, we follow the [guidelines from our reference book 
 es_parry_009 <- effectsize::r_to_d(r = .598,
                                 n1 = 6,
                                 n2 = 6
-)
+) %>%
+  round(2) #round the effsize to 2 digits
 
 # Adding info for output table
 parry_009 <- data.frame(
@@ -861,7 +862,7 @@ parry_009 <- data.frame(
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_009",
   outcome_measured = "Correlation between % melatonin suppression and estradiol levels in late-luteal phase",
-  effsize_calculated = base::round(es_parry_009,2)) #round the effsize to 2 digits
+  effsize_calculated = paste0("d=",es_parry_009))
 ```
 
 #### Analysis code: parry_010
@@ -874,7 +875,8 @@ Again, we assume N=6 for reasons explained above in parry_009.
 es_parry_010 <- effectsize::r_to_d(r = .613,
                                 n1 = 6,
                                 n2 = 6
-)
+) %>%
+  round(2) #round the effsize to 2 digits
 
 # Adding info for output table
 parry_010 <- data.frame(
@@ -882,7 +884,7 @@ parry_010 <- data.frame(
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_010",
   outcome_measured = "Correlation between % melatonin suppression and progesterone levels in late-luteal phase",
-  effsize_calculated = base::round(es_parry_010,2)) #round the effsize to 2 digits
+  effsize_calculated = paste0("d=",es_parry_010)) 
 ```
 
 #### Analysis code: parry_011
@@ -895,13 +897,69 @@ Again, we assume N=6 for reasons explained above in parry_009.
 es_parry_011 <- effectsize::r_to_d(r = .455,
                                 n1 = 6,
                                 n2 = 6
-)
+) %>%
+  round(2) #round the effsize to 2 digits
 
 # Adding info for output table
-parry_010 <- data.frame(
+parry_011 <- data.frame(
   reference = "Parry et al. (2010)",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_011",
   outcome_measured = "Correlation between % melatonin suppression and progesterone levels in mid-follicular phase",
-  effsize_calculated = base::round(es_parry_011,2)) #round the effsize to 2 digits
+  effsize_calculated = paste0("d=",es_parry_011)) 
 ```
+
+#### Analysis code: fazlali_001
+The authors report no menstrual-phase differences in melatonin area under the curve (AUC) between the follicular and luteal phases (between-subject analysis), and report the effect size in the supplementary materials (Table S6).
+```{r}
+fazlali_001 <- data.frame(
+  reference = "Fazlali et al. (2024), BioRxiv",
+  doi = "10.1101/2024.10.18.619012",
+  analysis_code = "fazlali_001",
+  outcome_measured = "Effect of menstrual phase (follicular and menstrual) on melatonin AUC",
+  effsize_calculated = "ωp2=0") 
+```
+
+
+### Creating an output table
+
+```{r}
+# Combining all data frames into one to create a gt table
+
+## First, create a list 
+df_list <- list(vidafar_001,
+                 vidafar_002,
+                 monteleone_003,
+                 boyce_kennaway_002,
+                 nathan_001,
+                 nathan_002,
+                 nathan_003,
+                 nathan_004,
+                 nathan_005,
+                 nathan_007,
+                 nathan_008,
+                 chellappa_002,
+                 chellappa_003,
+                 parry_001,
+                 parry_002,
+                 parry_003,
+                 parry_004,
+                 parry_005,
+                 parry_006,
+                 parry_007,
+                 parry_008,
+                 parry_009,
+                 parry_010,
+                 parry_011,
+                 fazlali_001) 
+
+# Turn effisze_calculated column to character for all dfs
+df_list <- lapply(df_list, function(df) { # we use lapply to apply the function to each df in the list, and return a list of the same length 
+  df %>% mutate(effsize_calculated = as.character(effsize_calculated))
+})
+
+# Combine all data frames into one
+effsizes_df_combined <- bind_rows(df_list) %>%
+  select(reference, doi, analysis_code, outcome_measured, effsize_calculated)
+```
+
