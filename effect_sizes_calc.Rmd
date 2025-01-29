@@ -909,6 +909,52 @@ parry_011 <- data.frame(
   effsize_calculated = paste0("d=",es_parry_011)) 
 ```
 
+#### Paper: [A pilot study of light exposure as a countermeasure for menstrual phase-dependent neurobehavioral performance impairment in women (Grant et al., 2024)](10.1016/j.sleh.2023.08.012)
+
+#### Analysis code: grant_001
+The authors measure reaction time following minimal melatonin suppression upon 6.5 hours light exposure during the follicular and luteal phases, N=29 (all women, N=12 follicular phase, N=17 luteal phase). They report Cohen's d directly in the paper, as an effect size for the difference in reaction times in women in follicular phase during minimal melatonin suppression.
+```{r}
+grant_001 <- data.frame(
+  reference = "Grant et al. (2024)",
+  doi = "10.1016/j.sleh.2023.08.012",
+  analysis_code = "grant_001",
+  outcome_measured = "Difference in reaction times for women in follicular vs luteal phase following minimal melatonin suppression upon light exposure",
+  effsize_calculated = "d=1.9") 
+```
+
+#### Analysis code: grant_002
+The authors measure attentional lapses following minimal melatonin suppression upon 6.5 hours light exposure during the follicular and luteal phases, N=29 (all women, N=12 follicular phase, N=17 luteal phase). They report Cohen's d directly in the paper, as an effect size for the difference in attentional lapses in women in follicular phase during minimal melatonin suppression.
+```{r}
+grant_002 <- data.frame(
+  reference = "Grant et al. (2024)",
+  doi = "10.1016/j.sleh.2023.08.012",
+  analysis_code = "grant_002",
+  outcome_measured = "Difference in attentional lapses for women in follicular vs luteal phase following minimal melatonin suppression upon light exposure",
+  effsize_calculated = "d=1.7") 
+```
+
+#### Analysis code: grant_003
+The authors measure reaction time following substantial vs minimal melatonin suppression upon 6.5 hours light exposure during the follicular phases, N=12 follicular phase. They report Cohen's d directly in the paper, as an effect size for the difference in reaction time in women in follicular phase when melatonin suppression was substantial vs minimal.
+```{r}
+grant_003 <- data.frame(
+  reference = "Grant et al. (2024)",
+  doi = "10.1016/j.sleh.2023.08.012",
+  analysis_code = "grant_003",
+  outcome_measured = "Difference in reaction time for women in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
+  effsize_calculated = "d=1.7") 
+```
+
+#### Analysis code: grant_004
+The authors measure attentional lapses following substantial vs minimal melatonin suppression upon 6.5 hours light exposure during the follicular phases, N=12 follicular phase. They report Cohen's d directly in the paper, as an effect size for the difference in attentional lapses in women in follicular phase when melatonin suppression was substantial vs minimal.
+```{r}
+grant_004 <- data.frame(
+  reference = "Grant et al. (2024)",
+  doi = "10.1016/j.sleh.2023.08.012",
+  analysis_code = "grant_004",
+  outcome_measured = "Difference in attentional lapses for women in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
+  effsize_calculated = "d=1.6") 
+```
+
 #### Analysis code: fazlali_001
 The authors report no menstrual-phase differences in melatonin area under the curve (AUC) between the follicular and luteal phases (between-subject analysis), and report the effect size in the supplementary materials (Table S6).
 ```{r}
@@ -917,6 +963,17 @@ fazlali_001 <- data.frame(
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_001",
   outcome_measured = "Effect of menstrual phase (follicular and menstrual) on melatonin AUC",
+  effsize_calculated = "ωp2=0") 
+```
+
+#### Analysis code: fazlali_002
+The authors report no effects of sex in melatonin area under the curve (AUC) for 48 subjects (N=24 women), and report the effect size in the supplementary materials (Table S5).
+```{r}
+fazlali_002 <- data.frame(
+  reference = "Fazlali et al. (2024), BioRxiv",
+  doi = "10.1101/2024.10.18.619012",
+  analysis_code = "fazlali_002",
+  outcome_measured = "Effect of sex on melatonin AUC",
   effsize_calculated = "ωp2=0") 
 ```
 
@@ -951,7 +1008,12 @@ df_list <- list(vidafar_001,
                  parry_009,
                  parry_010,
                  parry_011,
-                 fazlali_001) 
+                 grant_001,
+                 grant_002,
+                 grant_003,
+                 grant_004,
+                 fazlali_001, 
+                 fazlali_002) 
 
 # Turn effisze_calculated column to character for all dfs
 df_list <- lapply(df_list, function(df) { # we use lapply to apply the function to each df in the list, and return a list of the same length 
