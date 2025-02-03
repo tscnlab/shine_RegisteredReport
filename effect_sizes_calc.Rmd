@@ -174,22 +174,138 @@ Next, we calculate light sensitivity as described by the authors: "[...] plasma 
 ```{r}
 # Men
 mont_fig02_men <- mont_fig02_men %>%
-  mutate(light_sens = base::abs(light_mean - dark_mean)) # take absolute value of the difference
+  mutate(light_sens = base::abs(light_mean - dark_mean), # take absolute value of the difference
+         sd_dark = (dark_sem*base::sqrt(6)), # calculate sd for dark condition
+         sd_light = (light_sem*base::sqrt(6)) # calculate sd for light condition
+  )
 
 # Women
 mont_fig02_women <- mont_fig02_women %>%
-  mutate(light_sens = base::abs(light_mean - dark_mean)) # take absolute value of the difference  
+  mutate(light_sens = base::abs(light_mean - dark_mean), # take absolute value of the difference
+         sd_dark = (dark_sem*base::sqrt(6)), # calculate sd for dark condition
+         sd_light = (light_sem*base::sqrt(6)) # calculate sd for light condition
+  )
 
-## Note the the mean value for women at 03:30 does not add up to the one reported in the paper?
+# Combining in one df
+mont_fig02 <- full_join(mont_fig02_women, mont_fig02_men, by = "time") %>%
+  select(time, light_sens.x, sd_dark.x, sd_light.x, light_sens.y, sd_dark.y, sd_light.y) %>%
+  dplyr::rename(f_light_sens = light_sens.x,
+                f_sd_dark = sd_dark.x,
+                f_sd_light = sd_light.x,
+                m_light_sens = light_sens.y,
+                m_sd_dark = sd_dark.y,
+                m_sd_light = sd_light.y)
+```
 
-### Once we have the datapoints for each timepoint (03:00, 03:30, 04:00), how to deal with the extracted standard deviations?
+We now have, for each data point during light exposure, the mean and standard deviation of the dark and light condition, for both men and women. The authos however examine differences in light sensitivity, as explained above. This means that we need to also calculate the standard deviation of the differences, for each data point.
+```{r}
+# First, we calculate the variance for each datapoint by squaring the standard deviation
+mont_fig02 <- mont_fig02 %>%
+  mutate(f_var_dark = f_sd_dark^2,
+         f_var_light = f_sd_light^2,
+         m_var_dark = m_sd_dark^2,
+         m_var_light = m_sd_light^2)
+
+# Second, we calculate the variance of the differences by summing the variances of the two conditions, for both females and males
+mont_fig02 <- mont_fig02 %>%
+  mutate(f_var_diff = f_var_dark + f_var_light,
+         m_var_diff = m_var_dark + m_var_light)
+
+# Third, we calculate the standard deviation of the differences by taking the square root of the variance of the differences
+mont_fig02 <- mont_fig02 %>%
+  mutate(f_sd_diff = base::sqrt(f_var_diff),
+         m_sd_diff = base::sqrt(m_var_diff))
+
+# Let's only keep cols of interest 
+mont_fig02 <- mont_fig02 %>%
+  select(time, f_light_sens, f_sd_diff, m_light_sens, m_sd_diff) %>%
+  # Now we calculate a mean value for these three datapoints
+  summarise(
+    f_light_sens = mean(f_light_sens, na.rm = TRUE),
+    f_sd_diff = mean(f_sd_diff, na.rm = TRUE),
+    m_light_sens = mean(m_light_sens, na.rm = TRUE),
+    m_sd_diff = mean(m_sd_diff, na.rm = TRUE)
+  )
+
+```
+
+Change approach below! Only one - no need for a b c
+
+```{r}
+# Need to calculate effect size for each timepoint, starting at 03:00
+
+## 03:00
+stats_mont001_a <- MOTE::d.ind.t(
+  m1 = mont_fig02$f_light_sens[1],
+  m2 = mont_fig02$m_light_sens[1],
+  sd1 = mont_fig02$f_sd_diff[1],
+  sd2 = mont_fig02$m_sd_diff[1],
+  n1 = 6,
+  n2 = 6,
+  a = 0.05
+)
+
+## 03:30
+stats_mont001_b <- MOTE::d.ind.t(
+  m1 = mont_fig02$f_light_sens[2],
+  m2 = mont_fig02$m_light_sens[2],
+  sd1 = mont_fig02$f_sd_diff[2],
+  sd2 = mont_fig02$m_sd_diff[2],
+  n1 = 6,
+  n2 = 6,
+  a = 0.05
+)
+
+## 04:00
+stats_mont001_c <- MOTE::d.ind.t(
+  m1 = mont_fig02$f_light_sens[3],
+  m2 = mont_fig02$m_light_sens[3],
+  sd1 = mont_fig02$f_sd_diff[3],
+  sd2 = mont_fig02$m_sd_diff[3],
+  n1 = 6,
+  n2 = 6,
+  a = 0.05
+)
+
+# Create a df with relevant information
+monteleone_001 <- data.frame(
+  d_a = apa(stats_mont001_a$d), 
+  dlow_a = apa(stats_mont001_a$dlow), 
+  dhigh_a = apa(stats_mont001_a$dhigh),
+  d_b = apa(stats_mont001_b$d),
+  dlow_b = apa(stats_mont001_b$dlow),
+  dhigh_b = apa(stats_mont001_b$dhigh),
+  d_c = apa(stats_mont001_c$d),
+  dlow_c = apa(stats_mont001_c$dlow),
+  dhigh_c = apa(stats_mont001_c$dhigh)
+  )
+
+# Switch to long format
+monteleone_001_long <- monteleone_001 %>%
+  pivot_longer(
+    cols = everything(),  # Select all columns to pivot
+    names_to = c(".value", "group"),  # ".value" keeps d, dlow, dhigh as separate columns
+    names_pattern = "(d[a-z]*)_([a-c])"  # Correctly separates "d", "dlow", "dhigh" from "a", "b", "c"
+  )
+
+# Take average of these three timepoints
+monteleone_001_long <- monteleone_001_long %>%
+  summarise(
+    d = mean(as.numeric(d), na.rm = TRUE),
+    dlow = mean(as.numeric(dlow), na.rm = TRUE),
+    dhigh = mean(as.numeric(dhigh), na.rm = TRUE)
+  )
+
+# Add info for output table
+monteleone_001 <- monteleone_001 %>%
+  mutate(reference = "Monteleone et al. (1995",
+         doi = "10.1007/BF01276567",
+         analysis_code = "monteleone_001",
+         outcome_measured = "Sex difference in melatonin concentration at 200 lux",
+         effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
 ```
 
 #### Analysis code: monteleone_002
-
-Area under the curve - Same problem as above?
-
-#### Analysis code: monteleone_003
 
 This analysis looks at melatonin suppression as a function of gender, using a repeated measures ANOVA with time and gender as main effects (N=12, 6 women).
 The authors report the F statistic for the ANOVA with main effects for gender, F(1,10) = 0.422, ns.
@@ -200,16 +316,16 @@ Since we do not have this, but only the F statistic, we follow the [guidelines f
 ```{r}
 #F statistic reported: F(1,10) = 0.422
 
-monteleone_003 <- effectsize::F_to_eta2(f = 0.422,
+monteleone_002 <- effectsize::F_to_eta2(f = 0.422,
           df = 1,
           df_error = 10,
           alternative = "two.sided") 
 
 # Add info for output table
-monteleone_003 <- monteleone_003 %>%
+monteleone_002 <- monteleone_002 %>%
   mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
-         analysis_code = "monteleone_003",
+         analysis_code = "monteleone_002",
          outcome_measured = "Effect of gender on melatonin suppression",
          effsize_calculated = "ηp2=0.04, 95% CI[0,0.40]")
 ```
@@ -430,25 +546,52 @@ nathan_005 <- nathan_005 %>%
 
 #### Paper: [The effect of gender on the melatonin suppression by light: a dose response relationship (Nathan et al., 2000)](10.1007/s007020050022)
 
-### nathan_006 - to be discussed in person
-
+### nathan_006 
+In this analysis, the authors examine the effect of gender on melatonin suppression by light of varying intensities (N=19, 5 females). Since they do not report mean±SEM values for melatonin suppression illustrated in Figure 1, we extract them using [WebPlotDigitizer](https://automeris.io/). We choose to extract the values for the datapoints corresponding to the 500 lux condition, since this light intensity is relevant for our analysis. 
 ```{r}
-## The slope represents the rate of change in DV (melatonin suppression) for a unit increase in the independent variable (light intensity) -- reflects strength of relationship
+# Importing extracted data for Figure 1
+nathan_006_raw <- read.csv(here::here("extracted_data", "nathan_006_m_w.csv"),
+                           sep = ";")
 
-## The intercept represents the value of the DV when IV is zero -- reflects baseline starting point (?) 
+# The extracted data is raw, meaning that the values corresponding to the error bars do not correspond to the SEM. To calculate the real value of SEM, we need to substract the error bar value from the mean value. From this, we can calculate the sd 
 
-```
+nathan_006_clean <- nathan_006_raw %>%
+  mutate(
+    sem_f = base::abs(mean_f - errbar_f),
+    sem_m = base::abs(mean_m - errbar_m),
+    sd_f = (sem_f*base::sqrt(5)),
+    sd_m = (sem_m*base::sqrt(5))
+  )
 
-Conversion: eta squared from F statistics.
+# This gives us (mean±SD)
+# - Group 1 (females): 42.5812±23.42156
+# - Group 2 (males): 37.57169±10.69245
 
-```{r}
-# ANOVA results for slope: F1,8=16.01, p>.05
+# Now we can calculate the effect size using Cohen's d for two independent groups design
 
-nathan_006 <- effectsize::F_to_eta2(f = 16.01,
-          df = 1,
-          df_error = 8,
-          alternative = "two.sided") %>%
-  mutate(analysis = "nathan_006")
+stats_nat006 <- MOTE::d.ind.t(
+  m1 = 42.5812,
+  m2 = 37.57169,
+  sd1 = 23.42156,
+  sd2 = 10.69245,
+  n1 = 5,
+  n2 = 5,
+  a = 0.05
+)
+
+# Create a df with relevant information
+nathan_006 <- data.frame(
+  d = apa(stats_nat006$d), 
+  dlow = apa(stats_nat006$dlow), 
+  dhigh = apa(stats_nat006$dhigh))
+
+# Add info for output table
+nathan_006 <- nathan_006 %>%
+  mutate(reference = "Nathan et al. (2000)",
+         doi = "10.1007/s007020050022",
+         analysis_code = "nathan_006",
+         outcome_measured = "Sex difference in melatonin suppression % at 500 lux",
+         effsize_calculated = "d=0.28, 95% CI [-0.98, 1.51]")
 ```
 
 #### Paper: [Effect of the menstrual cycle stage on the melatonin suppression by dim white light (Nathan et al., 1999)](https://www.sciencedirect.com/science/article/pii/S0306453098000754?via%3Dihub)
