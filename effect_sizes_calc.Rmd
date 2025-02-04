@@ -64,16 +64,16 @@ stats_vid001 <- MOTE::d.ind.t(
 
 # Create a df with relevant information
 vidafar_001 <- data.frame(
-  d = apa(stats_vid001$d), 
-  dlow = apa(stats_vid001$dlow), 
-  dhigh = apa(stats_vid001$dhigh))
+  d = MOTE::apa(stats_vid001$d), 
+  dlow = MOTE::apa(stats_vid001$dlow), 
+  dhigh = MOTE::apa(stats_vid001$dhigh))
 
 # Add info for output table
 vidafar_001 <- vidafar_001 %>%
   mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_001",
-         outcome_measured = "Sex difference in melatonin concentration at 400 lux",
+         outcome_measured = "Sex difference in AUC of melatonin concentration at 400 lux",
          effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
 
 ```
@@ -101,16 +101,16 @@ stats_vid002 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-vidafar_002 <- data.frame(d = apa(stats_vid002$d),
-                         dlow = apa(stats_vid002$dlow),
-                         dhigh = apa(stats_vid002$dhigh)) 
+vidafar_002 <- data.frame(d = MOTE::apa(stats_vid002$d),
+                         dlow = MOTE::apa(stats_vid002$dlow),
+                         dhigh = MOTE::apa(stats_vid002$dhigh)) 
 
 # Add info for output table
 vidafar_002 <- vidafar_002 %>%
    mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_002",
-         outcome_measured = "Sex difference in melatonin concentration at 2000 lux",
+         outcome_measured = "Sex difference in AUC of melatonin concentration at 2000 lux",
          effsize_calculated = "d=0.85, 95% CI[0.13, 1.55]")
 
 ```
@@ -229,39 +229,15 @@ mont_fig02 <- mont_fig02 %>%
 
 ```
 
-Change approach below! Only one - no need for a b c
+Now we can calculate an effect size using Cohen's d for two independent groups design.
 
 ```{r}
-# Need to calculate effect size for each timepoint, starting at 03:00
 
-## 03:00
-stats_mont001_a <- MOTE::d.ind.t(
-  m1 = mont_fig02$f_light_sens[1],
-  m2 = mont_fig02$m_light_sens[1],
-  sd1 = mont_fig02$f_sd_diff[1],
-  sd2 = mont_fig02$m_sd_diff[1],
-  n1 = 6,
-  n2 = 6,
-  a = 0.05
-)
-
-## 03:30
-stats_mont001_b <- MOTE::d.ind.t(
-  m1 = mont_fig02$f_light_sens[2],
-  m2 = mont_fig02$m_light_sens[2],
-  sd1 = mont_fig02$f_sd_diff[2],
-  sd2 = mont_fig02$m_sd_diff[2],
-  n1 = 6,
-  n2 = 6,
-  a = 0.05
-)
-
-## 04:00
-stats_mont001_c <- MOTE::d.ind.t(
-  m1 = mont_fig02$f_light_sens[3],
-  m2 = mont_fig02$m_light_sens[3],
-  sd1 = mont_fig02$f_sd_diff[3],
-  sd2 = mont_fig02$m_sd_diff[3],
+stats_mont001 <- MOTE::d.ind.t(
+  m1 = mont_fig02$f_light_sens,
+  m2 = mont_fig02$m_light_sens,
+  sd1 = mont_fig02$f_sd_diff,
+  sd2 = mont_fig02$m_sd_diff,
   n1 = 6,
   n2 = 6,
   a = 0.05
@@ -269,40 +245,18 @@ stats_mont001_c <- MOTE::d.ind.t(
 
 # Create a df with relevant information
 monteleone_001 <- data.frame(
-  d_a = apa(stats_mont001_a$d), 
-  dlow_a = apa(stats_mont001_a$dlow), 
-  dhigh_a = apa(stats_mont001_a$dhigh),
-  d_b = apa(stats_mont001_b$d),
-  dlow_b = apa(stats_mont001_b$dlow),
-  dhigh_b = apa(stats_mont001_b$dhigh),
-  d_c = apa(stats_mont001_c$d),
-  dlow_c = apa(stats_mont001_c$dlow),
-  dhigh_c = apa(stats_mont001_c$dhigh)
-  )
-
-# Switch to long format
-monteleone_001_long <- monteleone_001 %>%
-  pivot_longer(
-    cols = everything(),  # Select all columns to pivot
-    names_to = c(".value", "group"),  # ".value" keeps d, dlow, dhigh as separate columns
-    names_pattern = "(d[a-z]*)_([a-c])"  # Correctly separates "d", "dlow", "dhigh" from "a", "b", "c"
-  )
-
-# Take average of these three timepoints
-monteleone_001_long <- monteleone_001_long %>%
-  summarise(
-    d = mean(as.numeric(d), na.rm = TRUE),
-    dlow = mean(as.numeric(dlow), na.rm = TRUE),
-    dhigh = mean(as.numeric(dhigh), na.rm = TRUE)
+  d= MOTE::apa(stats_mont001$d), 
+  dlow = MOTE::apa(stats_mont001$dlow), 
+  dhigh = MOTE::apa(stats_mont001$dhigh)
   )
 
 # Add info for output table
 monteleone_001 <- monteleone_001 %>%
-  mutate(reference = "Monteleone et al. (1995",
+  mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_001",
-         outcome_measured = "Sex difference in melatonin concentration at 200 lux",
-         effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
+         outcome_measured = "Sex difference in mean melatonin concentration at 2000 lux",
+         effsize_calculated = "d=0.96, 95% CI [-0.29, 2.17]")
 ```
 
 #### Analysis code: monteleone_002
@@ -326,7 +280,7 @@ monteleone_002 <- monteleone_002 %>%
   mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_002",
-         outcome_measured = "Effect of gender on melatonin suppression",
+         outcome_measured = "Effect of gender on melatonin suppression at 2000 lux",
          effsize_calculated = "ηp2=0.04, 95% CI[0,0.40]")
 ```
 
@@ -363,16 +317,16 @@ stats_bk <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-boyce_kennaway_002 <- data.frame(d = apa(stats_bk$d),
-                         dlow = apa(stats_bk$dlow),
-                         dhigh = apa(stats_bk$dhigh)) 
+boyce_kennaway_002 <- data.frame(d = MOTE::apa(stats_bk$d),
+                         dlow = MOTE::apa(stats_bk$dlow),
+                         dhigh = MOTE::apa(stats_bk$dhigh)) 
 
 # Add info for output table
 boyce_kennaway_002 <- boyce_kennaway_002 %>%
    mutate(reference = "Boyce & Kennaway (1987)",
          doi = "10.1016/0006-3223(87)90169-7",
          analysis_code = "boyce_kennaway_002",
-         outcome_measured = "Sex difference in melatonin concentration at 1000 lux",
+         outcome_measured = "Sex difference in mean melatonin concentration at 1000 lux",
          effsize_calculated = "d=-0.18, 95% CI[-1.4,1.07]")
 
 ```
@@ -422,16 +376,16 @@ stats_n002 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-nathan_002 <- data.frame(d = apa(stats_n002$d),
-                         dlow = apa(stats_n002$dlow),
-                         dhigh = apa(stats_n002$dhigh)) 
+nathan_002 <- data.frame(d = MOTE::apa(stats_n002$d),
+                         dlow = MOTE::apa(stats_n002$dlow),
+                         dhigh = MOTE::apa(stats_n002$dhigh)) 
 
 # Add info for output table
 nathan_002 <- nathan_002 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_002",
-         outcome_measured = "Sex difference in area under the curve of melatonin concentration at 200 lux",
+         outcome_measured = "Sex difference in AUC of melatonin concentration at 200 lux",
     effsize_calculated = "d=-0.046, 95% CI[-0.6,0.55]"
   )
 ```
@@ -458,16 +412,16 @@ stats_n003 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-nathan_003 <- data.frame(d = apa(stats_n003$d),
-                         dlow = apa(stats_n003$dlow),
-                         dhigh = apa(stats_n003$dhigh)) 
+nathan_003 <- data.frame(d = MOTE::apa(stats_n003$d),
+                         dlow = MOTE::apa(stats_n003$dlow),
+                         dhigh = MOTE::apa(stats_n003$dhigh)) 
 
 # Add info for output table
 nathan_003 <- nathan_003 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_003",
-         outcome_measured = "Sex differences in mean melatonin suppression (%) at 200 lux",
+         outcome_measured = "Sex difference in mean melatonin suppression at 200 lux",
     effsize_calculated = "d=-0.14, 95% CI [-0.74,0.46]"
   )
 
@@ -494,16 +448,16 @@ stats_n004 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-nathan_004 <- data.frame(d = apa(stats_n004$d),
-                         dlow = apa(stats_n004$dlow),
-                         dhigh = apa(stats_n004$dhigh)) 
+nathan_004 <- data.frame(d = MOTE::apa(stats_n004$d),
+                         dlow = MOTE::apa(stats_n004$dlow),
+                         dhigh = MOTE::apa(stats_n004$dhigh)) 
 
 # Add info for output table
 nathan_004 <- nathan_004 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_004",
-         outcome_measured = "Sex differences in area under the curve of melatonin concentration at 500 lux",
+         outcome_measured = "Sex difference in AUC of melatonin concentration at 500 lux",
          effsize_calculated = "d=0.31, 95% CI [-0.93,1.54]"
   )
 ```
@@ -529,16 +483,16 @@ stats_n005 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-nathan_005 <- data.frame(d = apa(stats_n005$d),
-                         dlow = apa(stats_n005$dlow),
-                         dhigh = apa(stats_n005$dhigh)) 
+nathan_005 <- data.frame(d = MOTE::apa(stats_n005$d),
+                         dlow = MOTE::apa(stats_n005$dlow),
+                         dhigh = MOTE::apa(stats_n005$dhigh)) 
 
 # Add info for output table
 nathan_005 <- nathan_005 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_005",
-         outcome_measured = "Sex differences in mean melatonin suppression (%) at 500 lux",
+         outcome_measured = "Sex difference in mean melatonin suppression at 500 lux",
          effsize_calculated = "d=1.0, 95% CI [-0.3,2.3]")
 
 
@@ -581,16 +535,16 @@ stats_nat006 <- MOTE::d.ind.t(
 
 # Create a df with relevant information
 nathan_006 <- data.frame(
-  d = apa(stats_nat006$d), 
-  dlow = apa(stats_nat006$dlow), 
-  dhigh = apa(stats_nat006$dhigh))
+  d = MOTE::apa(stats_nat006$d), 
+  dlow = MOTE::apa(stats_nat006$dlow), 
+  dhigh = MOTE::apa(stats_nat006$dhigh))
 
 # Add info for output table
 nathan_006 <- nathan_006 %>%
   mutate(reference = "Nathan et al. (2000)",
          doi = "10.1007/s007020050022",
          analysis_code = "nathan_006",
-         outcome_measured = "Sex difference in melatonin suppression % at 500 lux",
+         outcome_measured = "Sex difference in melatonin suppression at 500 lux",
          effsize_calculated = "d=0.28, 95% CI [-0.98, 1.51]")
 ```
 
@@ -637,7 +591,7 @@ nathan_008 <- nathan_008 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_008",
-         outcome_measured = "Effect of menstrual cycle (luteal, follicular, menstrual) on melatonin suppression at 200 lux",
+         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, menstrual) on melatonin suppression at 200 lux",
          effsize_calculated = "ηp2=0.006, 95% CI [0,0.03]")
 
 ```
@@ -680,7 +634,7 @@ chellappa_002 <- chellappa_002 %>%
   mutate(reference = "Chellappa et al. (2017)",
          doi = "10.1038/s41598-017-13973-1",
          analysis_code = "chellappa_002",
-         outcome_measured = "Sex differences in brightness perception between 6500K and 2500K light conditions",
+         outcome_measured = "Sex difference in brightness perception at 6500K and 2500K light conditions",
          effsize_calculated = "ηp2=0.13, 95% CI [0,0.36]")
 
 ```
@@ -715,16 +669,16 @@ stats_c003 <- MOTE::d.ind.t(
 )
 
 # Print just the d value and confidence intervals
-chellappa_003 <- data.frame(d = apa(stats_c003$d),
-                         dlow = apa(stats_c003$dlow),
-                         dhigh = apa(stats_c003$dhigh)) 
+chellappa_003 <- data.frame(d = MOTE::apa(stats_c003$d),
+                         dlow = MOTE::apa(stats_c003$dlow),
+                         dhigh = MOTE::apa(stats_c003$dhigh)) 
 
 # Add info for output table
 chellappa_003 <- chellappa_003 %>%
 mutate(reference = "Chellappa et al. (2017)",
        doi = "10.1038/s41598-017-13973-1",
        analysis_code = "chellappa_003",
-       outcome_measured = "Sex differences in brightness perception between 6500K and 2500K light conditions (post-hoc)",
+       outcome_measured = "Sex difference in brightness perception at 6500K and 2500K light conditions (post-hoc)",
        effsize_calculated = "d=-0.9, 95% CI [-1.62,-0.16]")
 ```
 
@@ -751,16 +705,16 @@ stats_p001 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_001 <- data.frame(d = apa(stats_p001$d),
-                        dlow = apa(stats_p001$dlow),
-                        dhigh = apa(stats_p001$dhigh))
+parry_001 <- data.frame(d = MOTE::apa(stats_p001$d),
+                        dlow = MOTE::apa(stats_p001$dlow),
+                        dhigh = MOTE::apa(stats_p001$dhigh))
 
 # Add info for output table
 parry_001 <- parry_001 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_001",
-       outcome_measured = "Differences in mean melatonin values at 500 lux during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follcular vs. luteal) in mean melatonin values at 500 lux",
        effsize_calculated = "d=0.1, 95% CI [-0.78,0.98]")
 ```
 
@@ -783,16 +737,16 @@ stats_p002 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_002 <- data.frame(d = apa(stats_p002$d),
-                        dlow = apa(stats_p002$dlow),
-                        dhigh = apa(stats_p002$dhigh))
+parry_002 <- data.frame(d = MOTE::apa(stats_p002$d),
+                        dlow = MOTE::apa(stats_p002$dlow),
+                        dhigh = MOTE::apa(stats_p002$dhigh))
 
 # Add info for output table
 parry_002 <- parry_002 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_002",
-       outcome_measured = "Change score in melatonin offset time between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin offset time between night 1 and night 3 of circadian phase shift study",
        effsize_calculated = "d=-0.13, 95% CI [-1,0.76]")
 
 ```
@@ -812,16 +766,16 @@ stats_p003 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_003 <- data.frame(d = apa(stats_p003$d),
-                        dlow = apa(stats_p003$dlow),
-                        dhigh = apa(stats_p003$dhigh))
+parry_003 <- data.frame(d = MOTE::apa(stats_p003$d),
+                        dlow = MOTE::apa(stats_p003$dlow),
+                        dhigh = MOTE::apa(stats_p003$dhigh))
 
 # Add info for output table
 parry_003 <- parry_003 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_003",
-       outcome_measured = "Change score in melatonin onset time between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin onset time between night 1 and night 3 of circadian phase shift study",
        effsize_calculated = "d=-0.44, 95% CI [-1.34,0.51]")
 ```
 
@@ -840,16 +794,16 @@ stats_p004 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_004 <- data.frame(d = apa(stats_p004$d),
-                        dlow = apa(stats_p004$dlow),
-                        dhigh = apa(stats_p004$dhigh))
+parry_004 <- data.frame(d = MOTE::apa(stats_p004$d),
+                        dlow = MOTE::apa(stats_p004$dlow),
+                        dhigh = MOTE::apa(stats_p004$dhigh))
 
 # Add info for output table
 parry_004 <- parry_004 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_004",
-       outcome_measured = "Change score in melatonin duration between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin duration between night 1 and night 3 of circadian phase shift study",
        effsize_calculated = "d=0.22, 95% CI [-0.68,1.01]")
 ```
 
@@ -868,16 +822,16 @@ stats_p005 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_005 <- data.frame(d = apa(stats_p005$d),
-                        dlow = apa(stats_p005$dlow),
-                        dhigh = apa(stats_p005$dhigh))
+parry_005 <- data.frame(d = MOTE::apa(stats_p005$d),
+                        dlow = MOTE::apa(stats_p005$dlow),
+                        dhigh = MOTE::apa(stats_p005$dhigh))
 
 # Add info for output table
 parry_005 <- parry_005 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_005",
-       outcome_measured = "Change score in melatonin peak between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin peak time between night 1 and night 3 of circadian phase shift study",
        effsize_calculated = "d=-0.66, 95% CI [-1.61,0.35]")
 ```
 
@@ -896,16 +850,16 @@ stats_p006 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_006 <- data.frame(d = apa(stats_p006$d),
-                        dlow = apa(stats_p006$dlow),
-                        dhigh = apa(stats_p006$dhigh))
+parry_006 <- data.frame(d = MOTE::apa(stats_p006$d),
+                        dlow = MOTE::apa(stats_p006$dlow),
+                        dhigh = MOTE::apa(stats_p006$dhigh))
 
 # Add info for output table
 parry_006 <- parry_006 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_006",
-       outcome_measured = "Change score in melatonin AUC between night 1 and night 3 of circadian phase shift study during the follicular and luteal phase",
+       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin AUC between night 1 and night 3 of circadian phase shift study",
        effsize_calculated = "d=-0.52, 95% CI [-0.45,1.44]")
 ```
 
@@ -931,20 +885,20 @@ stats_p007 <- MOTE::d.dep.t.avg(
 )
 
 # print just the d value and confidence intervals
-parry_007 <- data.frame(d = apa(stats_p007$d),
-                        dlow = apa(stats_p007$dlow),
-                        dhigh = apa(stats_p007$dhigh))
+parry_007 <- data.frame(d = MOTE::apa(stats_p007$d),
+                        dlow = MOTE::apa(stats_p007$dlow),
+                        dhigh = MOTE::apa(stats_p007$dhigh))
 
 # Add info for output table
 parry_007 <- parry_007 %>%
   mutate(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_007",
-       outcome_measured = "Mean plasma melatonin levels during light exposure at 200 lux in mid-follicular and late-luteal phases",
+       outcome_measured = "Menstrual phase difference (mid-follicular vs. late-luteal) in mean plasma melatonin levels at 200 lux",
        effsize_calculated = "d=-0.13, 95% CI [-0.68,0.41]")
 ```
 
-#### Analysis code; parry_008
+#### Analysis code: parry_008
 
 The authors analyse % melatonin suppression differences in response to 200 lux light from 01:30 to 03:00 (light exposure window) in the mid-follicular and late-luteal phases.
 They report that, in the NC group (N=13 women), the menstrual phase difference was nonsignificant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754).
@@ -963,7 +917,7 @@ r <- (z/base::sqrt(N)) %>%
 parry_008 <- data.frame(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_008",
-       outcome_measured = "% melatonin suppression differences in response to 200 lux from baseline in the mid-follicular and late-luteal phases",
+       outcome_measured = "Menstrual phase difference (mid-follicular vs. late-luteal) in melatonin suppression in response to 200 lux from baseline",
     effsize_calculated = paste0("r=",r)) 
 ```
 
@@ -1048,7 +1002,7 @@ grant_001 <- data.frame(
   reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_001",
-  outcome_measured = "Difference in reaction times for women in follicular vs luteal phase following minimal melatonin suppression upon light exposure",
+  outcome_measured = "Menstrual phase difference (follicular vs. luteal) in reaction times following minimal melatonin suppression upon light exposure",
   effsize_calculated = "d=1.9") 
 ```
 
@@ -1062,7 +1016,7 @@ grant_002 <- data.frame(
   reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_002",
-  outcome_measured = "Difference in attentional lapses for women in follicular vs luteal phase following minimal melatonin suppression upon light exposure",
+  outcome_measured = "Menstrual phase difference (follicular vs. luteal) in attentional lapses following minimal melatonin suppression upon light exposure",
   effsize_calculated = "d=1.7") 
 ```
 
@@ -1076,7 +1030,7 @@ grant_003 <- data.frame(
   reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_003",
-  outcome_measured = "Difference in reaction time for women in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
+  outcome_measured = "Difference in reaction time in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
   effsize_calculated = "d=1.7") 
 ```
 
@@ -1090,57 +1044,56 @@ grant_004 <- data.frame(
   reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_004",
-  outcome_measured = "Difference in attentional lapses for women in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
+  outcome_measured = "Difference in attentional lapses in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
   effsize_calculated = "d=1.6") 
 ```
 
 #### Analysis code: fazlali_001
-
-The authors report no menstrual-phase differences in melatonin area under the curve (AUC) between the follicular and luteal phases (between-subject analysis), and report the effect size in the supplementary materials (Table S6).
+The authors report no effects of sex in melatonin area under the curve (AUC) for 48 subjects (N=24 women), and report the effect size in the supplementary materials (Table S5).
 
 ```{r}
 fazlali_001 <- data.frame(
-  reference = "Fazlali et al. (2024), BioRxiv",
+  reference = "Fazlali et al. (2024, pre-print)",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_001",
-  outcome_measured = "Effect of menstrual phase (follicular and menstrual) on melatonin AUC",
+  outcome_measured = "Effect of sex on AUC of melatonin concentration",
   effsize_calculated = "ωp2=0") 
 ```
 
 #### Analysis code: fazlali_002
-
-The authors report no effects of sex in melatonin area under the curve (AUC) for 48 subjects (N=24 women), and report the effect size in the supplementary materials (Table S5).
+The authors report no menstrual-phase differences in melatonin area under the curve (AUC) between the follicular and luteal phases (between-subject analysis), and report the effect size in the supplementary materials (Table S6).
 
 ```{r}
 fazlali_002 <- data.frame(
-  reference = "Fazlali et al. (2024), BioRxiv",
+  reference = "Fazlali et al. (2024, pre-print)",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_002",
-  outcome_measured = "Effect of sex on melatonin AUC",
+  outcome_measured = "Effect of menstrual phase (follicular vs. luteal) on AUC of melatonin concentration",
   effsize_calculated = "ωp2=0") 
 ```
+
 
 ### Creating an output table
 
 ```{r}
-# Combining all data frames to create two gt tables (one would be too long)
+# Combining all data frames to create two gt tables 
+## The first table will look at sex differences
 
 ## First, create a list for table 1
-df_list_1 <- list(vidafar_001,
-                 vidafar_002,
-                 monteleone_003,
-                 boyce_kennaway_002,
+df_list_1 <- list(boyce_kennaway_002,
+                 monteleone_001,
+                 monteleone_002,
                  nathan_001,
                  nathan_002,
                  nathan_003,
                  nathan_004,
                  nathan_005,
-                 nathan_007,
-                 nathan_008,
+                 nathan_006,
                  chellappa_002,
                  chellappa_003,
-                 parry_001,
-                 parry_002)
+                 vidafar_001,
+                 vidafar_002,
+                 fazlali_001)
 
 # Turn effisze_calculated column to character for all dfs of df_list_1
 df_list_1 <- lapply(df_list_1, function(df) { # we use lapply to apply the function to each df in the list, and return a list of the same length 
@@ -1149,11 +1102,16 @@ df_list_1 <- lapply(df_list_1, function(df) { # we use lapply to apply the funct
 
 # Combine data frames into one
 effsizes_df1_combined <- bind_rows(df_list_1) %>%
-  select(reference, doi, analysis_code, outcome_measured, effsize_calculated)  %>%
-  dplyr::mutate(a = "")  # Add an empty column - workaround because otherwise the last col will be truncated in the gt table
+  select(reference, doi, analysis_code, outcome_measured, effsize_calculated)  
+
+## The second table will look at menstrual phases (and/or hormonal profiles) differences 
 
 ## Second, create a list for table 2
-df_list_2 <- list(parry_003,
+df_list_2 <- list(nathan_007,
+                 nathan_008,
+                 parry_001,
+                 parry_002,
+                 parry_003,
                  parry_004,
                  parry_005,
                  parry_006,
@@ -1166,7 +1124,6 @@ df_list_2 <- list(parry_003,
                  grant_002,
                  grant_003,
                  grant_004,
-                 fazlali_001, 
                  fazlali_002) 
 
 # Turn effisze_calculated column to character for all dfs of df_list_2
@@ -1176,37 +1133,45 @@ df_list_2 <- lapply(df_list_2, function(df) { # we use lapply to apply the funct
 
 # Combine data frames into one
 effsizes_df2_combined <- bind_rows(df_list_2) %>%
-  select(reference, doi, analysis_code, outcome_measured, effsize_calculated) %>%
-  dplyr::mutate(a = "")  # Add an empty column - workaround because otherwise the last col will be truncated in the gt table
+  select(reference, doi, analysis_code, outcome_measured, effsize_calculated) 
 ```
 
 #### Turning the dataframes into a gt tables
-
 ```{r}
 # Table 1
 effsizes_table_1 <- effsizes_df1_combined %>%
   gt::gt() %>%
-  gt::tab_header(title = gt::md("**Calculation of effect sizes for studies on sex- and hormone-related differences in non visual responses to light exposure**")) %>%
+  gt::tab_header(title = gt::md("**Calculated effect sizes for studies on sex differences in non-visual responses to light exposure**")) %>%
   gt::cols_label(reference = "Reference",
                  doi = "doi",
                  analysis_code = "Analysis code",
-                 outcome_measured = "Outcome measured",
-                 effsize_calculated = "Calculated effect size") %>%
+                 outcome_measured = "Outcome measured\U00B9",
+                 effsize_calculated = "Calculated effect size\U00B2") %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B9 Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.")) %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using women/females as Group 1 and men/males as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
+    ) %>%
   gt::tab_options(
-    table.font.size = gt::px(14)  # Adjust as needed
+    table.font.size = gt::px(12)  # Adjust as needed
   )
 
 # Table 2 
 effsizes_table_2 <- effsizes_df2_combined %>%
   gt::gt() %>%
-  gt::tab_header(title = gt::md("**Calculation of effect sizes for studies on sex- and hormone-related differences in non visual responses to light exposure**")) %>%
+  gt::tab_header(title = gt::md("**Calculated effect sizes for studies on menstrual phase related differences in non-visual responses to light exposure**")) %>%
   gt::cols_label(reference = "Reference",
                  doi = "doi",
                  analysis_code = "Analysis code",
-                 outcome_measured = "Outcome measured",
-                 effsize_calculated = "Calculated effect size") %>%
+                 outcome_measured = "Outcome measured\U00B9",
+                 effsize_calculated = "Calculated effect size\U00B2") %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B9 Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.")) %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using follicular phase as Group 1 and luteal phase as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
+    ) %>%
   gt::tab_options(
-    table.font.size = gt::px(16)  # Adjust as needed
+    table.font.size = gt::px(11)  # Adjust as needed
   )
 ```
 
@@ -1217,19 +1182,23 @@ library(chromote)
 
 # Make sure you set your path to Chrome using Sys.setenv(CHROMOTE_CHROME = "path/to/chrome.exe") and check this was correct by running chromote::find_chrome()
 
+## The following line ensures that the outputs folder exists 
+output_dir <-  here::here("outputs")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
 # Save table 1
 gt::gtsave(effsizes_table_1,
-           filename = "effsize_table_pt1.png",
+           filename = "effsize_sexdiff.png",
            path = here::here("outputs"),
            vwidth = 1400,
            vheight = 300)
 
 # Save table 2
 gt::gtsave(effsizes_table_2,
-           filename = "effsize_table_pt2.png",
+           filename = "effsize_phasediff.png",
            path = here::here("outputs"),
-           vwidth = 1400,
-           vheight = 300)
+           vwidth = 2200,
+           vheight = 400)
 
 ```
 
