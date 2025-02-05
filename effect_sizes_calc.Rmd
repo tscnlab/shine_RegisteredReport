@@ -74,7 +74,7 @@ vidafar_001 <- vidafar_001 %>%
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_001",
          outcome_measured = "Sex difference in AUC of melatonin concentration at 400 lux",
-         effsize_calculated = "d=0.71, 95% CI [0.16, 1.25]")
+         effsize_calculated = "d=0.71, 95% CI [0.16,1.25]")
 
 ```
 
@@ -111,7 +111,7 @@ vidafar_002 <- vidafar_002 %>%
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_002",
          outcome_measured = "Sex difference in AUC of melatonin concentration at 2000 lux",
-         effsize_calculated = "d=0.85, 95% CI[0.13, 1.55]")
+         effsize_calculated = "d=0.85, 95% CI[0.13,1.55]")
 
 ```
 
@@ -256,7 +256,7 @@ monteleone_001 <- monteleone_001 %>%
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_001",
          outcome_measured = "Sex difference in mean melatonin concentration at 2000 lux",
-         effsize_calculated = "d=0.96, 95% CI [-0.29, 2.17]")
+         effsize_calculated = "d=0.96, 95% CI [-0.29,2.17]")
 ```
 
 #### Analysis code: monteleone_002
@@ -545,7 +545,7 @@ nathan_006 <- nathan_006 %>%
          doi = "10.1007/s007020050022",
          analysis_code = "nathan_006",
          outcome_measured = "Sex difference in melatonin suppression at 500 lux",
-         effsize_calculated = "d=0.28, 95% CI [-0.98, 1.51]")
+         effsize_calculated = "d=0.28, 95% CI [-0.98,1.51]")
 ```
 
 #### Paper: [Effect of the menstrual cycle stage on the melatonin suppression by dim white light (Nathan et al., 1999)](https://www.sciencedirect.com/science/article/pii/S0306453098000754?via%3Dihub)
@@ -860,7 +860,7 @@ parry_006 <- parry_006 %>%
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_006",
        outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin AUC between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=-0.52, 95% CI [-0.45,1.44]")
+       effsize_calculated = "d=0.52, 95% CI [-0.45,1.44]")
 ```
 
 #### Paper: [Increased sensitivity to light-induced melatonin suppression in premenstrual dysphoric disorder (Parry et al., 2010)](https://doi.org/10.3109/07420528.2010.503331)
@@ -914,7 +914,7 @@ r <- (z/base::sqrt(N)) %>%
      base::round(2) #rounding to 2 digits
 
 # creating info for table ouput
-parry_008 <- data.frame(reference = "Parry et al. (2010)",
+parry_008 <- data.frame(reference = "Parry et al. (2010)\U00B3",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_008",
        outcome_measured = "Menstrual phase difference (mid-follicular vs. late-luteal) in melatonin suppression in response to 200 lux from baseline",
@@ -939,7 +939,7 @@ es_parry_009 <- effectsize::r_to_d(r = .598,
 
 # Adding info for output table
 parry_009 <- data.frame(
-  reference = "Parry et al. (2010)",
+  reference = "Parry et al. (2010)\U00B3",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_009",
   outcome_measured = "Correlation between % melatonin suppression and estradiol levels in late-luteal phase",
@@ -961,7 +961,7 @@ es_parry_010 <- effectsize::r_to_d(r = .613,
 
 # Adding info for output table
 parry_010 <- data.frame(
-  reference = "Parry et al. (2010)",
+  reference = "Parry et al. (2010)\U00B3",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_010",
   outcome_measured = "Correlation between % melatonin suppression and progesterone levels in late-luteal phase",
@@ -983,7 +983,7 @@ es_parry_011 <- effectsize::r_to_d(r = .455,
 
 # Adding info for output table
 parry_011 <- data.frame(
-  reference = "Parry et al. (2010)",
+  reference = "Parry et al. (2010)\U00B3",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_011",
   outcome_measured = "Correlation between % melatonin suppression and progesterone levels in mid-follicular phase",
@@ -999,7 +999,7 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_001 <- data.frame(
-  reference = "Grant et al. (2024)",
+  reference = "Grant et al. (2024)\U00B3",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_001",
   outcome_measured = "Menstrual phase difference (follicular vs. luteal) in reaction times following minimal melatonin suppression upon light exposure",
@@ -1013,7 +1013,7 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_002 <- data.frame(
-  reference = "Grant et al. (2024)",
+  reference = "Grant et al. (2024)\U00B3",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_002",
   outcome_measured = "Menstrual phase difference (follicular vs. luteal) in attentional lapses following minimal melatonin suppression upon light exposure",
@@ -1027,7 +1027,7 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_003 <- data.frame(
-  reference = "Grant et al. (2024)",
+  reference = "Grant et al. (2024)\U00B3",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_003",
   outcome_measured = "Difference in reaction time in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
@@ -1041,7 +1041,7 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_004 <- data.frame(
-  reference = "Grant et al. (2024)",
+  reference = "Grant et al. (2024)\U00B3",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_004",
   outcome_measured = "Difference in attentional lapses in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
@@ -1053,7 +1053,7 @@ The authors report no effects of sex in melatonin area under the curve (AUC) for
 
 ```{r}
 fazlali_001 <- data.frame(
-  reference = "Fazlali et al. (2024, pre-print)",
+  reference = "Fazlali et al. (2024, pre-print)\U00B3",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_001",
   outcome_measured = "Effect of sex on AUC of melatonin concentration",
@@ -1065,7 +1065,7 @@ The authors report no menstrual-phase differences in melatonin area under the cu
 
 ```{r}
 fazlali_002 <- data.frame(
-  reference = "Fazlali et al. (2024, pre-print)",
+  reference = "Fazlali et al. (2024, pre-print)\U00B3",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_002",
   outcome_measured = "Effect of menstrual phase (follicular vs. luteal) on AUC of melatonin concentration",
@@ -1152,6 +1152,9 @@ effsizes_table_1 <- effsizes_df1_combined %>%
   gt::tab_footnote(
     footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using women/females as Group 1 and men/males as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
     ) %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B3 95 % confidence intervals not available")
+  ) %>%
   gt::tab_options(
     table.font.size = gt::px(12)  # Adjust as needed
   )
@@ -1169,7 +1172,10 @@ effsizes_table_2 <- effsizes_df2_combined %>%
     footnote = gt::md("\U00B9 Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.")) %>%
   gt::tab_footnote(
     footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using follicular phase as Group 1 and luteal phase as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
-    ) %>%
+    )  %>%
+  gt::tab_footnote(
+    footnote = gt::md("\U00B3 95 % confidence intervals not available")
+  ) %>%
   gt::tab_options(
     table.font.size = gt::px(11)  # Adjust as needed
   )
@@ -1201,6 +1207,123 @@ gt::gtsave(effsizes_table_2,
            vheight = 400)
 
 ```
+### Creation of forest plots
+We now want to visualise calculated effect sizes and confidence intervals using a forest plot. We will create two forest plots for the two tables created above (Plot 1: effect sizes for sex differences; Plot 2: effect sizes for menstrual phase differences).
+
+#### Plot 1 : sex differences
+```{r}
+ # Since we have saved the effect sizes as strings in the col "Calculated effect size", we need to extract this information and assign it to different columns
+effsizes_sex <- effsizes_df1_combined %>%
+  mutate(
+    eff = stringr::str_extract(effsize_calculated, "(?<=[=])-?\\d+\\.\\d*|(?<=[=])\\d+"),  # Extract effect size
+    lower = stringr::str_extract(effsize_calculated, "(?<=\\[)-?\\d+\\.?\\d*"),  # Extract lower CI bound
+    upper = stringr::str_extract(effsize_calculated, "(?<=,)-?\\d+\\.?\\d*")  # Extract upper CI bound
+  ) %>%
+  # Ensure they are numeric
+  mutate(across(c(eff, lower, upper), as.numeric))
+
+## Add a blank col
+effsizes_sex$` ` <- paste(rep(" ", 13), collapse = "     ")
+
+# Ensure that if no confidence intervals are available, the cols upper and lower still get a value of zero
+## This caveat is needed or else the effect size will not be shown
+effsizes_sex <- effsizes_sex %>%
+  mutate(
+    lower = ifelse(is.na(lower), 0, lower),
+    upper = ifelse(is.na(upper), 0, upper)
+  ) %>%
+  # We also need to do some renaming of the columns
+  rename("Reference" = reference,
+         "Calculated effect size" = effsize_calculated)
+
+# Define theme
+tm <- forest_theme(base_size = 10,
+                   refline_gp = gpar(col ="darkred", lty = "dashed"),
+                   arrow_type = "closed",
+                   footnote_gp = gpar(cex = .8),
+                   title_gp = gpar(cex = 1),
+                   title_just = "left")
 
 
+
+p1 <- forestploter::forest(effsizes_sex[,c(1,5,9)],
+            est = effsizes_sex$eff,
+            lower = effsizes_sex$lower, 
+            upper = effsizes_sex$upper,
+            ci_column = 3,
+            refline_gp = 0,
+            theme = tm_1,
+            xlim = c(-2.50,2.5),
+            footnote = "\U00B3 95% confidence intervals not available",
+            title = "Calculated effect sizes for studies on sex differences \nin non-visual responses to light exposure"
+          )
+p1
+
+```
+#### Plot 2: Menstrual phase or hormonal profile differences
+```{r}
+ # Since we have saved the effect sizes as strings in the col "Calculated effect size", we need to extract this information and assign it to different columns
+effsizes_horm <- effsizes_df2_combined %>%
+  mutate(
+    eff = stringr::str_extract(effsize_calculated, "(?<=[=])-?\\d+\\.\\d*|(?<=[=])\\d+"),  # Extract effect size
+    lower = stringr::str_extract(effsize_calculated, "(?<=\\[)-?\\d+\\.?\\d*"),  # Extract lower CI bound
+    upper = stringr::str_extract(effsize_calculated, "(?<=,)-?\\d+\\.?\\d*")  # Extract upper CI bound
+  ) %>%
+  # Ensure they are numeric
+  mutate(across(c(eff, lower, upper), as.numeric))
+
+## Add a blank col
+effsizes_horm$` ` <- paste(rep(" ", 13), collapse = "     ")
+
+# Ensure that if no confidence intervals are available, the cols upper and lower still get a value of zero
+## This caveat is needed or else the effect size will not be shown
+effsizes_horm <- effsizes_horm %>%
+  mutate(
+    lower = ifelse(is.na(lower), 0, lower),
+    upper = ifelse(is.na(upper), 0, upper)
+  ) %>%
+  # We also need to do some renaming of the columns
+  rename("Reference" = reference,
+         "Calculated effect size" = effsize_calculated)
+
+
+p2 <- forestploter::forest(effsizes_horm[,c(1,5,9)],
+            est = effsizes_horm$eff,
+            lower = effsizes_horm$lower, 
+            upper = effsizes_horm$upper,
+            ci_column = 3,
+            refline_gp = 0,
+            theme = tm, #keeping the same theme as above
+            xlim = c(-2.50,2.5),
+            footnote = "\U00B3 95 % confidence intervals not available",
+            title = "Calculated effect sizes for studies on menstrual phase related differences \nin non-visual responses to light exposure"
+          )
+p2
+
+```
+### Saving the two forest plots
+```{r}
+## Create outputs folder if not already there
+output_dir <-  here::here("outputs")
+if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+
+# Save plot 1
+ggplot2::ggsave(filename = "forest_sexdiff.png",
+                plot = p1,
+                dpi = 600,
+                width = 7.5,
+                height = 5,
+                units = "in",
+                path = here::here("outputs"))
+
+# Save plot 2
+ggplot2::ggsave(filename = "forest_phasediff.png",
+                plot = p2,
+                dpi = 600,
+                width = 7.5,
+                height = 5,
+                units = "in",
+                path = here::here("outputs"))
+
+```
 
