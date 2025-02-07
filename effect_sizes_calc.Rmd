@@ -73,8 +73,8 @@ vidafar_001 <- vidafar_001 %>%
   mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_001",
-         outcome_measured = "Sex difference in AUC of melatonin concentration at 400 lux",
-         effsize_calculated = "d=0.71, 95% CI [0.16,1.25]")
+         outcome_measured = "Sex difference in AUC of MLT concentration at 400 lux",
+         effsize_calculated = "\U1D451=0.71, 95% CI [0.16,1.25]")
 
 ```
 
@@ -110,8 +110,8 @@ vidafar_002 <- vidafar_002 %>%
    mutate(reference = "Vidafar et al. (2024)",
          doi = "10.1111/jpi.12936",
          analysis_code = "vidafar_002",
-         outcome_measured = "Sex difference in AUC of melatonin concentration at 2000 lux",
-         effsize_calculated = "d=0.85, 95% CI[0.13,1.55]")
+         outcome_measured = "Sex difference in AUC of MLT concentration at 2000 lux",
+         effsize_calculated = "\U1D451=0.85, 95% CI [0.13,1.55]")
 
 ```
 
@@ -255,8 +255,8 @@ monteleone_001 <- monteleone_001 %>%
   mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_001",
-         outcome_measured = "Sex difference in mean melatonin concentration at 2000 lux",
-         effsize_calculated = "d=0.96, 95% CI [-0.29,2.17]")
+         outcome_measured = "Sex difference in mean MLT concentration at 2000 lux",
+         effsize_calculated = "\U1D451=0.96, 95% CI [-0.29,2.17]")
 ```
 
 #### Analysis code: monteleone_002
@@ -280,8 +280,8 @@ monteleone_002 <- monteleone_002 %>%
   mutate(reference = "Monteleone et al. (1995)",
          doi = "10.1007/BF01276567",
          analysis_code = "monteleone_002",
-         outcome_measured = "Effect of gender on melatonin suppression at 2000 lux",
-         effsize_calculated = "ηp2=0.04, 95% CI[0,0.40]")
+         outcome_measured = "Effect of gender on MLT suppression at 2000 lux",
+         effsize_calculated = "η\U00B2\U209A=0.04, 95% CI [0,0.40]")
 ```
 
 #### Paper: [Effects of light on melatonin production (Boyce & Kennaway, 1987)](https://www.sciencedirect.com/science/article/pii/0006322387901697?via%3Dihub)
@@ -326,8 +326,8 @@ boyce_kennaway_002 <- boyce_kennaway_002 %>%
    mutate(reference = "Boyce & Kennaway (1987)",
          doi = "10.1016/0006-3223(87)90169-7",
          analysis_code = "boyce_kennaway_002",
-         outcome_measured = "Sex difference in mean melatonin concentration at 1000 lux",
-         effsize_calculated = "d=-0.18, 95% CI[-1.4,1.07]")
+         outcome_measured = "Sex difference in mean MLT concentration at 1000 lux",
+         effsize_calculated = "\U1D451=-0.18, 95% CI [-1.4,1.07]")
 
 ```
 
@@ -351,8 +351,8 @@ nathan_001 <- nathan_001 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_001",
-         outcome_measured = "Effect of gender on melatonin suppression at 200 lux",
-         effsize_calculated = "ηp2=0, 95% CI[0,0]")
+         outcome_measured = "Effect of gender on MLT suppression at 200 lux",
+         effsize_calculated = "η\U00B2\U209A=0, 95% CI [0,0]")
 ```
 
 #### Analysis code: nathan_002
@@ -385,8 +385,8 @@ nathan_002 <- nathan_002 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_002",
-         outcome_measured = "Sex difference in AUC of melatonin concentration at 200 lux",
-    effsize_calculated = "d=-0.046, 95% CI[-0.6,0.55]"
+         outcome_measured = "Sex difference in AUC of MLT concentration at 200 lux",
+    effsize_calculated = "\U1D451=-0.046, 95% CI [-0.6,0.55]"
   )
 ```
 
@@ -421,8 +421,8 @@ nathan_003 <- nathan_003 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_003",
-         outcome_measured = "Sex difference in mean melatonin suppression at 200 lux",
-    effsize_calculated = "d=-0.14, 95% CI [-0.74,0.46]"
+         outcome_measured = "Sex difference in mean MLT suppression at 200 lux",
+    effsize_calculated = "\U1D451=-0.14, 95% CI [-0.74,0.46]"
   )
 
 ```
@@ -457,8 +457,8 @@ nathan_004 <- nathan_004 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_004",
-         outcome_measured = "Sex difference in AUC of melatonin concentration at 500 lux",
-         effsize_calculated = "d=0.31, 95% CI [-0.93,1.54]"
+         outcome_measured = "Sex difference in AUC of MLT concentration at 500 lux",
+         effsize_calculated = "\U1D451=0.31, 95% CI [-0.93,1.54]"
   )
 ```
 
@@ -492,8 +492,8 @@ nathan_005 <- nathan_005 %>%
   mutate(reference = "Nathan et al. (1997)",
          doi = "10.1007/BF01291882",
          analysis_code = "nathan_005",
-         outcome_measured = "Sex difference in mean melatonin suppression at 500 lux",
-         effsize_calculated = "d=1.0, 95% CI [-0.3,2.3]")
+         outcome_measured = "Sex difference in mean MLT suppression at 500 lux",
+         effsize_calculated = "\U1D451=1.0, 95% CI [-0.3,2.3]")
 
 
 ```
@@ -544,8 +544,8 @@ nathan_006 <- nathan_006 %>%
   mutate(reference = "Nathan et al. (2000)",
          doi = "10.1007/s007020050022",
          analysis_code = "nathan_006",
-         outcome_measured = "Sex difference in melatonin suppression at 500 lux",
-         effsize_calculated = "d=0.28, 95% CI [-0.98,1.51]")
+         outcome_measured = "Sex difference in MLT suppression at 500 lux",
+         effsize_calculated = "\U1D451=0.28, 95% CI [-0.98,1.51]")
 ```
 
 #### Paper: [Effect of the menstrual cycle stage on the melatonin suppression by dim white light (Nathan et al., 1999)](https://www.sciencedirect.com/science/article/pii/S0306453098000754?via%3Dihub)
@@ -567,8 +567,8 @@ nathan_007 <- nathan_007 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_007",
-         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, mestrual) on melatonin concentration at 200 lux",
-         effsize_calculated = "ηp2=0.06, 95% CI [0,0.36]")
+         outcome_measured = "Effect of cycle phase (luteal, follicular, menstrual) on MLT concentration at 200 lux",
+         effsize_calculated = "η\U00B2\U209A=0.06, 95% CI [0,0.36]")
 
 ```
 
@@ -591,8 +591,8 @@ nathan_008 <- nathan_008 %>%
   mutate(reference = "Nathan et al. (1999)",
          doi = "10.1016/S0306453098000754",
          analysis_code = "nathan_008",
-         outcome_measured = "Effect of menstrual cycle phase (luteal, follicular, menstrual) on melatonin suppression at 200 lux",
-         effsize_calculated = "ηp2=0.006, 95% CI [0,0.03]")
+         outcome_measured = "Effect of cycle phase (luteal, follicular, menstrual) on MLT suppression at 200 lux",
+         effsize_calculated = "η\U00B2\U209A=0.006, 95% CI [0,0.03]")
 
 ```
 
@@ -634,8 +634,8 @@ chellappa_002 <- chellappa_002 %>%
   mutate(reference = "Chellappa et al. (2017)",
          doi = "10.1038/s41598-017-13973-1",
          analysis_code = "chellappa_002",
-         outcome_measured = "Sex difference in brightness perception at 6500K and 2500K light conditions",
-         effsize_calculated = "ηp2=0.13, 95% CI [0,0.36]")
+         outcome_measured = "Sex difference in brightness perception at 6500K and 2500K LE",
+         effsize_calculated = "η\U00B2\U209A=0.13, 95% CI [0,0.36]")
 
 ```
 
@@ -678,8 +678,8 @@ chellappa_003 <- chellappa_003 %>%
 mutate(reference = "Chellappa et al. (2017)",
        doi = "10.1038/s41598-017-13973-1",
        analysis_code = "chellappa_003",
-       outcome_measured = "Sex difference in brightness perception at 6500K and 2500K light conditions (post-hoc)",
-       effsize_calculated = "d=-0.9, 95% CI [-1.62,-0.16]")
+       outcome_measured = "Sex difference in brightness perception at 6500K and 2500K LE (post-hoc)",
+       effsize_calculated = "\U1D451=-0.9, 95% CI [-1.62,-0.16]")
 ```
 
 #### Paper: [Blunted Phase-Shift Responses to Morning Bright Light in Premenstrual Dysphoric Disorder (Parry et al., 1997)](10.1177/074873049701200506)
@@ -714,8 +714,8 @@ parry_001 <- parry_001 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_001",
-       outcome_measured = "Menstrual phase difference (follcular vs. luteal) in mean melatonin values at 500 lux",
-       effsize_calculated = "d=0.1, 95% CI [-0.78,0.98]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in mean MLT at 500 lux",
+       effsize_calculated = "\U1D451=0.1, 95% CI [-0.78,0.98]")
 ```
 
 ### Analysis code: parry_002
@@ -746,8 +746,8 @@ parry_002 <- parry_002 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_002",
-       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin offset time between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=-0.13, 95% CI [-1,0.76]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in \U0394score of MLT offset time",
+       effsize_calculated = "\U1D451=-0.13, 95% CI [-1,0.76]")
 
 ```
 
@@ -775,8 +775,8 @@ parry_003 <- parry_003 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_003",
-       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin onset time between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=-0.44, 95% CI [-1.34,0.51]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in \U0394score of MLT onset time",
+       effsize_calculated = "\U1D451=-0.44, 95% CI [-1.34,0.51]")
 ```
 
 #### Analysis code: parry_004
@@ -803,8 +803,8 @@ parry_004 <- parry_004 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_004",
-       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin duration between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=0.22, 95% CI [-0.68,1.01]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in \U0394score of MLT duration",
+       effsize_calculated = "\U1D451=0.22, 95% CI [-0.68,1.01]")
 ```
 
 #### Analysis code: parry_005
@@ -831,8 +831,8 @@ parry_005 <- parry_005 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_005",
-       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin peak time between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=-0.66, 95% CI [-1.61,0.35]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in \U0394score of MLT peak time",
+       effsize_calculated = "\U1D451=-0.66, 95% CI [-1.61,0.35]")
 ```
 
 #### Analysis code: parry_006
@@ -859,8 +859,8 @@ parry_006 <- parry_006 %>%
   mutate(reference = "Parry et al. (1997)",
        doi = "10.1177/074873049701200506",
        analysis_code = "parry_006",
-       outcome_measured = "Menstrual phase difference (follicular vs. luteal) in change score of melatonin AUC between night 1 and night 3 of circadian phase shift study",
-       effsize_calculated = "d=0.52, 95% CI [-0.45,1.44]")
+       outcome_measured = "Phase difference (follicular vs. luteal) in \U0394score of MLT AUC",
+       effsize_calculated = "\U1D451=0.52, 95% CI [-0.45,1.44]")
 ```
 
 #### Paper: [Increased sensitivity to light-induced melatonin suppression in premenstrual dysphoric disorder (Parry et al., 2010)](https://doi.org/10.3109/07420528.2010.503331)
@@ -894,14 +894,14 @@ parry_007 <- parry_007 %>%
   mutate(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_007",
-       outcome_measured = "Menstrual phase difference (mid-follicular vs. late-luteal) in mean plasma melatonin levels at 200 lux",
-       effsize_calculated = "d=-0.13, 95% CI [-0.68,0.41]")
+       outcome_measured = "Phase difference (mid-follicular vs. late-luteal) in mean MLT at 200 lux",
+       effsize_calculated = "\U1D451=-0.13, 95% CI [-0.68,0.41]")
 ```
 
 #### Analysis code: parry_008
 
 The authors analyse % melatonin suppression differences in response to 200 lux light from 01:30 to 03:00 (light exposure window) in the mid-follicular and late-luteal phases.
-They report that, in the NC group (N=13 women), the menstrual phase difference was nonsignificant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754).
+They report that, in the NC group (N=13 women), the menstrual phase difference was non-significant (10.5% in the mid-follicular phase versus -6.8% in the late-luteal phase, z=0.314, p=.754).
 This analysis was performed using a Wilcoxon signed-rank and Mann-Whitney U test.
 Since the authors provide the z value, we can use this to calculate the effect size r as [indicated in the rstatix package](https://rpkgs.datanovia.com/rstatix/reference/wilcox_effsize.html): `r = Z/sqrt(N)`
 
@@ -914,11 +914,11 @@ r <- (z/base::sqrt(N)) %>%
      base::round(2) #rounding to 2 digits
 
 # creating info for table ouput
-parry_008 <- data.frame(reference = "Parry et al. (2010)\U00B3",
+parry_008 <- data.frame(reference = "Parry et al. (2010)",
        doi = "10.3109/07420528.2010.503331",
        analysis_code = "parry_008",
-       outcome_measured = "Menstrual phase difference (mid-follicular vs. late-luteal) in melatonin suppression in response to 200 lux from baseline",
-    effsize_calculated = paste0("r=",r)) 
+       outcome_measured = "Phase difference (mid-follicular vs. late-luteal) in MLT suppression at 200 lux from baseline",
+    effsize_calculated = paste0("\U1D45F=",r)) 
 ```
 
 #### Analysis code: parry_009
@@ -939,11 +939,11 @@ es_parry_009 <- effectsize::r_to_d(r = .598,
 
 # Adding info for output table
 parry_009 <- data.frame(
-  reference = "Parry et al. (2010)\U00B3",
+  reference = "Parry et al. (2010)",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_009",
-  outcome_measured = "Correlation between % melatonin suppression and estradiol levels in late-luteal phase",
-  effsize_calculated = paste0("d=",es_parry_009))
+  outcome_measured = "Correlation between MLT suppression and estradiol levels in late-luteal phase",
+  effsize_calculated = paste0("\U1D451=",es_parry_009))
 ```
 
 #### Analysis code: parry_010
@@ -961,11 +961,11 @@ es_parry_010 <- effectsize::r_to_d(r = .613,
 
 # Adding info for output table
 parry_010 <- data.frame(
-  reference = "Parry et al. (2010)\U00B3",
+  reference = "Parry et al. (2010)",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_010",
-  outcome_measured = "Correlation between % melatonin suppression and progesterone levels in late-luteal phase",
-  effsize_calculated = paste0("d=",es_parry_010)) 
+  outcome_measured = "Correlation between % MLT suppression and progesterone levels in late-luteal phase",
+  effsize_calculated = paste0("\U1D451=",es_parry_010)) 
 ```
 
 #### Analysis code: parry_011
@@ -983,11 +983,11 @@ es_parry_011 <- effectsize::r_to_d(r = .455,
 
 # Adding info for output table
 parry_011 <- data.frame(
-  reference = "Parry et al. (2010)\U00B3",
+  reference = "Parry et al. (2010)",
   doi = "10.3109/07420528.2010.503331",
   analysis_code = "parry_011",
-  outcome_measured = "Correlation between % melatonin suppression and progesterone levels in mid-follicular phase",
-  effsize_calculated = paste0("d=",es_parry_011)) 
+  outcome_measured = "Correlation between % MLT suppression and progesterone levels in mid-follicular phase",
+  effsize_calculated = paste0("\U1D451=",es_parry_011)) 
 ```
 
 #### Paper: [A pilot study of light exposure as a countermeasure for menstrual phase-dependent neurobehavioral performance impairment in women (Grant et al., 2024)](10.1016/j.sleh.2023.08.012)
@@ -999,11 +999,11 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_001 <- data.frame(
-  reference = "Grant et al. (2024)\U00B3",
+  reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_001",
-  outcome_measured = "Menstrual phase difference (follicular vs. luteal) in reaction times following minimal melatonin suppression upon light exposure",
-  effsize_calculated = "d=1.9") 
+  outcome_measured = "Phase difference (follicular vs. luteal) in RTs for minimal MLT suppression upon LE",
+  effsize_calculated = "\U1D451=1.9") 
 ```
 
 #### Analysis code: grant_002
@@ -1013,11 +1013,11 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_002 <- data.frame(
-  reference = "Grant et al. (2024)\U00B3",
+  reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_002",
-  outcome_measured = "Menstrual phase difference (follicular vs. luteal) in attentional lapses following minimal melatonin suppression upon light exposure",
-  effsize_calculated = "d=1.7") 
+  outcome_measured = "Phase difference (follicular vs. luteal) in ALs for minimal MLT suppression upon LE",
+  effsize_calculated = "\U1D451=1.7") 
 ```
 
 #### Analysis code: grant_003
@@ -1027,11 +1027,11 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_003 <- data.frame(
-  reference = "Grant et al. (2024)\U00B3",
+  reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_003",
-  outcome_measured = "Difference in reaction time in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
-  effsize_calculated = "d=1.7") 
+  outcome_measured = "Difference in RTs in follicular phase for substantial vs minimal MLT suppression upon LE",
+  effsize_calculated = "\U1D451=1.7") 
 ```
 
 #### Analysis code: grant_004
@@ -1041,11 +1041,11 @@ They report Cohen's d directly in the paper, as an effect size for the differenc
 
 ```{r}
 grant_004 <- data.frame(
-  reference = "Grant et al. (2024)\U00B3",
+  reference = "Grant et al. (2024)",
   doi = "10.1016/j.sleh.2023.08.012",
   analysis_code = "grant_004",
-  outcome_measured = "Difference in attentional lapses in follicular phase following substantial vs minimal melatonin suppression upon light exposure",
-  effsize_calculated = "d=1.6") 
+  outcome_measured = "Difference in ALs in follicular phase for substantial vs minimal MLT suppression upon LE",
+  effsize_calculated = "\U1D451=1.6") 
 ```
 
 #### Analysis code: fazlali_001
@@ -1053,11 +1053,11 @@ The authors report no effects of sex in melatonin area under the curve (AUC) for
 
 ```{r}
 fazlali_001 <- data.frame(
-  reference = "Fazlali et al. (2024, pre-print)\U00B3",
+  reference = "Fazlali et al. (2024, pre-print)",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_001",
-  outcome_measured = "Effect of sex on AUC of melatonin concentration",
-  effsize_calculated = "ωp2=0") 
+  outcome_measured = "Effect of sex on AUC of MLT concentration",
+  effsize_calculated = "ω\U00B2\U209A=0") 
 ```
 
 #### Analysis code: fazlali_002
@@ -1065,11 +1065,11 @@ The authors report no menstrual-phase differences in melatonin area under the cu
 
 ```{r}
 fazlali_002 <- data.frame(
-  reference = "Fazlali et al. (2024, pre-print)\U00B3",
+  reference = "Fazlali et al. (2024, pre-print)",
   doi = "10.1101/2024.10.18.619012",
   analysis_code = "fazlali_002",
-  outcome_measured = "Effect of menstrual phase (follicular vs. luteal) on AUC of melatonin concentration",
-  effsize_calculated = "ωp2=0") 
+  outcome_measured = "Effect of phase (follicular vs. luteal) on AUC of MLT concentration",
+  effsize_calculated = "ω\U00B2\U209A=0") 
 ```
 
 
@@ -1082,17 +1082,17 @@ fazlali_002 <- data.frame(
 ## First, create a list for table 1
 df_list_1 <- list(boyce_kennaway_002,
                  monteleone_001,
-                 monteleone_002,
-                 nathan_001,
                  nathan_002,
                  nathan_003,
                  nathan_004,
                  nathan_005,
-                 nathan_006,
-                 chellappa_002,
+                 nathan_006,  
                  chellappa_003,
                  vidafar_001,
                  vidafar_002,
+                 monteleone_002,
+                 nathan_001,
+                 chellappa_002,
                  fazlali_001)
 
 # Turn effisze_calculated column to character for all dfs of df_list_1
@@ -1107,8 +1107,7 @@ effsizes_df1_combined <- bind_rows(df_list_1) %>%
 ## The second table will look at menstrual phases (and/or hormonal profiles) differences 
 
 ## Second, create a list for table 2
-df_list_2 <- list(nathan_007,
-                 nathan_008,
+df_list_2 <- list(
                  parry_001,
                  parry_002,
                  parry_003,
@@ -1116,7 +1115,6 @@ df_list_2 <- list(nathan_007,
                  parry_005,
                  parry_006,
                  parry_007,
-                 parry_008,
                  parry_009,
                  parry_010,
                  parry_011,
@@ -1124,7 +1122,12 @@ df_list_2 <- list(nathan_007,
                  grant_002,
                  grant_003,
                  grant_004,
+                 nathan_007,
+                 nathan_008,
+                 parry_008,
                  fazlali_002) 
+
+
 
 # Turn effisze_calculated column to character for all dfs of df_list_2
 df_list_2 <- lapply(df_list_2, function(df) { # we use lapply to apply the function to each df in the list, and return a list of the same length 
@@ -1145,16 +1148,25 @@ effsizes_table_1 <- effsizes_df1_combined %>%
   gt::cols_label(reference = "Reference",
                  doi = "doi",
                  analysis_code = "Analysis code",
-                 outcome_measured = "Outcome measured\U00B9",
-                 effsize_calculated = "Calculated effect size\U00B2") %>%
+                 outcome_measured = "Outcome measured",
+                 effsize_calculated = "Calculated effect size") %>%
   gt::tab_footnote(
-    footnote = gt::md("\U00B9 Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.")) %>%
-  gt::tab_footnote(
-    footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using women/females as Group 1 and men/males as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
+    footnote = gt::md("Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study."),
+    locations = gt::cells_column_labels(
+      columns = outcome_measured)
     ) %>%
   gt::tab_footnote(
-    footnote = gt::md("\U00B3 95 % confidence intervals not available")
-  ) %>%
+    footnote = gt::md("Effect size calculated: Effect sizes were computed using women/females as Group 1 and men/males as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1."),
+    locations = gt::cells_column_labels(
+      columns = effsize_calculated)
+    ) %>%
+  gt::tab_footnote(
+    footnote = gt::md("95% confidence intervals unavailable (not reported in original study)"),
+    locations = gt::cells_body(
+      columns = reference,
+      rows = 14)
+    ) %>%
+  gt::opt_footnote_marks(marks = "numbers") %>%
   gt::tab_options(
     table.font.size = gt::px(12)  # Adjust as needed
   )
@@ -1166,19 +1178,34 @@ effsizes_table_2 <- effsizes_df2_combined %>%
   gt::cols_label(reference = "Reference",
                  doi = "doi",
                  analysis_code = "Analysis code",
-                 outcome_measured = "Outcome measured\U00B9",
-                 effsize_calculated = "Calculated effect size\U00B2") %>%
+                 outcome_measured = "Outcome measured",
+                 effsize_calculated = "Calculated effect size") %>%
+ gt::tab_footnote(
+    footnote = gt::md("Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study."),
+    locations = gt::cells_column_labels(
+      columns = outcome_measured)
+    ) %>%
   gt::tab_footnote(
-    footnote = gt::md("\U00B9 Outcome measured: The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.")) %>%
+    footnote = gt::md("Effect size calculated: Effect sizes were computed using follicular phase as Group 1 and luteal phase as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1."),
+    locations = gt::cells_column_labels(
+      columns = effsize_calculated)
+    ) %>%
+   gt::tab_footnote(
+    footnote = gt::md("95% confidence intervals unavailable from conversion"),
+    locations = gt::cells_body(
+      columns = reference,
+      rows = 10:13)
+    ) %>%
   gt::tab_footnote(
-    footnote = gt::md("\U00B2 Effect size calculated: Effect sizes were computed using follicular phase as Group 1 and luteal phase as Group 2, ensuring consistency in the direction of effects. Positive effect sizes thus indicate higher values on the measured outcome for Group 1 compared to Group 2, while negative effect sizes indicate that Group 2 had higher values compared to Group 1.")
-    )  %>%
-  gt::tab_footnote(
-    footnote = gt::md("\U00B3 95 % confidence intervals not available")
-  ) %>%
-  gt::tab_options(
-    table.font.size = gt::px(11)  # Adjust as needed
-  )
+    footnote = gt::md("95% confidence intervals unavailable (not reported in original study)"),
+    locations = gt::cells_body(
+      columns = reference,
+      rows = 14:18)
+    ) %>%
+    gt::opt_footnote_marks(marks = "numbers") %>%
+    gt::tab_options(
+      table.font.size = gt::px(11)  # Adjust as needed
+   )
 ```
 
 #### Saving gt table
@@ -1222,8 +1249,21 @@ effsizes_sex <- effsizes_df1_combined %>%
   # Ensure they are numeric
   mutate(across(c(eff, lower, upper), as.numeric))
 
+## Add row that specify which effect size is of interest
+effsizes_sex <- effsizes_sex %>%
+  tibble::add_row(effsize_calculated = "Cohen's d (\U1D451)",
+                  .before = 1) %>%
+  tibble::add_row(effsize_calculated = "Partial eta-squared (η\U00B2\U209A)",
+                  .before = 11) %>%
+  tibble::add_row(effsize_calculated = "Partial omega-squared (ω\U00B2\U209A)",
+                  .before = 16)
+
+# This created a lot of NAs which we want to replace with empty strings
+effsizes_sex <- effsizes_sex %>%
+  mutate(across(c(reference, doi, analysis_code, outcome_measured), ~ replace_na(.x, "")))
+
 ## Add a blank col
-effsizes_sex$` ` <- paste(rep(" ", 13), collapse = "     ")
+effsizes_sex$` ` <- paste(rep(" ", 17), collapse = "     ")
 
 # Ensure that if no confidence intervals are available, the cols upper and lower still get a value of zero
 ## This caveat is needed or else the effect size will not be shown
@@ -1231,35 +1271,57 @@ effsizes_sex <- effsizes_sex %>%
   mutate(
     lower = ifelse(is.na(lower), 0, lower),
     upper = ifelse(is.na(upper), 0, upper)
-  ) %>%
-  # We also need to do some renaming of the columns
+  ) 
+
+# Adding footnotes symbols to specific rows (this is not possible in the forest plot itself, hence we need to add them at the df level)  
+effsizes_sex <- effsizes_sex %>%
+  mutate(reference = case_when(
+    analysis_code %in% c("monteleone_001", "nathan_006") ~ paste0(reference, "\U00B3"),
+    analysis_code == "fazlali_001" ~ paste0(reference, "\U2074"),
+    TRUE ~ reference  # Keep the reference unchanged if no condition is met
+  ))
+
+# We also need to do some renaming of the columns
+effsizes_sex <- effsizes_sex %>%
   rename("Reference" = reference,
-         "Calculated effect size" = effsize_calculated)
+         "Analysis code" = analysis_code,
+         "Outcome measured\U00B9" = outcome_measured,
+         "Calculated effect size\U00B2" = effsize_calculated)
 
-# Define theme
-tm <- forest_theme(base_size = 10,
-                   refline_gp = gpar(col ="darkred", lty = "dashed"),
+# Define theme of the forest plot
+tm <- forestploter::forest_theme(base_size = 10,
+                   refline_gp = grid::gpar(col ="darkred", lty = "dashed"),
+                   xlab_adjust = "center",
                    arrow_type = "closed",
-                   footnote_gp = gpar(cex = .8),
-                   title_gp = gpar(cex = 1),
-                   title_just = "left")
+                   title_gp = grid::gpar(cex = 1.2),
+                   footnote_gp = grid::gpar(cex = 0.8),
+                   title_just = "left",
+                   plot_margin = grid::unit(c(0, 0, 0, 0), "lines") # Adjust top, right, bottom, left margins
+                   )
 
-
-
-p1 <- forestploter::forest(effsizes_sex[,c(1,5,9)],
+# Plot
+p1 <- forestploter::forest(effsizes_sex[,c(1:5,9)],
             est = effsizes_sex$eff,
             lower = effsizes_sex$lower, 
             upper = effsizes_sex$upper,
-            ci_column = 3,
+            ci_column = 6,
             refline_gp = 0,
-            theme = tm_1,
+            theme = tm,
             xlim = c(-2.50,2.5),
-            footnote = "\U00B3 95% confidence intervals not available",
-            title = "Calculated effect sizes for studies on sex differences \nin non-visual responses to light exposure"
-          )
-p1
+            footnote = "\n\n\n\n\n\U00B9 The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.\n\U00B2 Effect sizes were computed using women/females as Group 1 and men/males as Group 2. Positive effect sizes indicate higher values on the measured outcome for Group 1 compared to Group 2, \n  while negative effect sizes indicate higher values for Group 2.\n\U00B3 Data extracted using WebPlotDigitizer.\n\U2074 95% confidence intervals unavailable (not reported in original study).",
+            title = "Calculated effect sizes for studies on sex differences in non-visual responses to light exposure"
+          ) 
+
+# Editing backgrounds of each effsize metric "class"
+p1 <- forestploter::edit_plot(p1, row = 1, which = "background",
+               gp = grid::gpar(fill = "darkseagreen4")) %>%
+  forestploter::edit_plot(row = 11, which = "background",
+               gp = grid::gpar(fill = "darkseagreen")) %>%
+  forestploter::edit_plot(row = 16, which = "background",
+               gp = grid::gpar(fill = "darkseagreen3"))
 
 ```
+
 #### Plot 2: Menstrual phase or hormonal profile differences
 ```{r}
  # Since we have saved the effect sizes as strings in the col "Calculated effect size", we need to extract this information and assign it to different columns
@@ -1272,8 +1334,23 @@ effsizes_horm <- effsizes_df2_combined %>%
   # Ensure they are numeric
   mutate(across(c(eff, lower, upper), as.numeric))
 
+## Add row that specify which effect size is of interest
+effsizes_horm <- effsizes_horm %>%
+  tibble::add_row(effsize_calculated = "Cohen's d (\U1D451)",
+                  .before = 1) %>%
+  tibble::add_row(effsize_calculated = "Partial eta-squared (η\U00B2\U209A)",
+                  .before = 16) %>%
+    tibble::add_row(effsize_calculated = "Wilcoxon effect size (\U1D45F)",
+                  .before = 19) %>%
+  tibble::add_row(effsize_calculated = "Partial omega-squared (ω\U00B2\U209A)",
+                  .before = 21)
+
+# This created a lot of NAs which we want to replace with empty strings
+effsizes_horm <- effsizes_horm %>%
+  mutate(across(c(reference, doi, analysis_code, outcome_measured), ~ replace_na(.x, "")))
+
 ## Add a blank col
-effsizes_horm$` ` <- paste(rep(" ", 13), collapse = "     ")
+effsizes_horm$` ` <- paste(rep(" ", 22), collapse = "     ")
 
 # Ensure that if no confidence intervals are available, the cols upper and lower still get a value of zero
 ## This caveat is needed or else the effect size will not be shown
@@ -1281,26 +1358,48 @@ effsizes_horm <- effsizes_horm %>%
   mutate(
     lower = ifelse(is.na(lower), 0, lower),
     upper = ifelse(is.na(upper), 0, upper)
-  ) %>%
-  # We also need to do some renaming of the columns
-  rename("Reference" = reference,
-         "Calculated effect size" = effsize_calculated)
+  ) 
+
+# Adding footnotes symbols to specific rows (this is not possible in the forest plot itself, hence we need to add them at the df level)  
+effsizes_horm <- effsizes_horm %>%
+  mutate(reference = case_when(
+    analysis_code %in% c("parry_008", "parry_009", "parry_010", "parry_011") ~ paste0(reference, "\U00B3"),
+    analysis_code %in% c("fazlali_002", "grant_001", "grant_002", "grant_003", "grant_004" ) ~ paste0(reference, "\U2074"),
+    TRUE ~ reference  # Keep the reference unchanged if no condition is met
+  ))
+
+# We also need to do some renaming of the columns
+effsizes_horm <- effsizes_horm %>%
+   rename("Reference" = reference,
+         "Analysis code" = analysis_code,
+         "Outcome measured\U00B9" = outcome_measured,
+         "Calculated effect size\U00B2" = effsize_calculated)
 
 
-p2 <- forestploter::forest(effsizes_horm[,c(1,5,9)],
+p2 <- forestploter::forest(effsizes_horm[,c(1:5,9)],
             est = effsizes_horm$eff,
             lower = effsizes_horm$lower, 
             upper = effsizes_horm$upper,
-            ci_column = 3,
+            ci_column = 6,
             refline_gp = 0,
             theme = tm, #keeping the same theme as above
             xlim = c(-2.50,2.5),
-            footnote = "\U00B3 95 % confidence intervals not available",
-            title = "Calculated effect sizes for studies on menstrual phase related differences \nin non-visual responses to light exposure"
-          )
-p2
+            footnote = "\n\n\n\n\n\U00B9 The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.\n\U00B2 Effect sizes were computed using women/females as Group 1 and men/males as Group 2. Positive effect sizes indicate higher values on the measured outcome for Group 1 compared to Group 2, \n  while negative effect sizes indicate higher values for Group 2.\n\U00B3 95% confidence intervals unavailable from conversion.\n\U2074 95% confidence intervals unavailable (not reported in original study).",
+            title = "Calculated effect sizes for studies on menstrual phase related differences in non-visual responses to light exposure")
 
+# Editing backgrounds of each effsize metric "class"
+p2 <- forestploter::edit_plot(p2, row = 1, which = "background",
+               gp = grid::gpar(fill = "darkseagreen4")) %>%
+  forestploter::edit_plot(row = 16, which = "background",
+               gp = grid::gpar(fill = "darkseagreen")) %>%
+  forestploter::edit_plot(row = 19, which = "background",
+               gp = grid::gpar(fill = "darkseagreen3")) %>%
+  forestploter::edit_plot(row = 21, which = "background",
+               gp = grid::gpar(fill = "darkseagreen2"))
+
+ 
 ```
+
 ### Saving the two forest plots
 ```{r}
 ## Create outputs folder if not already there
@@ -1311,8 +1410,8 @@ if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 ggplot2::ggsave(filename = "forest_sexdiff.png",
                 plot = p1,
                 dpi = 600,
-                width = 7.5,
-                height = 5,
+                width = 17,
+                height = 6,
                 units = "in",
                 path = here::here("outputs"))
 
@@ -1320,10 +1419,52 @@ ggplot2::ggsave(filename = "forest_sexdiff.png",
 ggplot2::ggsave(filename = "forest_phasediff.png",
                 plot = p2,
                 dpi = 600,
-                width = 7.5,
-                height = 5,
+                width = 20,
+                height = 7,
                 units = "in",
                 path = here::here("outputs"))
 
+```
+
+```{r}
+ footnote = "\n\n\U00B9 The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study.\n
+            \U00B2 Effect sizes were computed using women/females as Group 1 and men/males as Group 2. Positive effect sizes indicate higher
+            values on the measured outcome for Group 1 \n  compared to Group 2, while negative effect sizes indicate higher values for Group 2.
+            \n
+            \U00B3 Data extracted using WebPlotDigitizer.\n
+            \U2074 95% confidence intervals unavailable (not reported in original study)."
+
+# Adding footnotes as grobs
+txt_1 <- "\U00B9 The choice of nomenclature for sex and/or gender is based on the terminology used in the individual study."
+txt_2 <- "\U00B2 Effect sizes were computed using women/females as Group 1 and men/males as Group 2. Positive effect sizes indicate higher values on the measured outcome for Group 1 \n  compared to Group 2, while negative effect sizes indicate higher values for Group 2."
+txt_3 <- "\U00B3 Data extracted using WebPlotDigitizer."
+txt_4 <- "\U2074 95% confidence intervals unavailable (not reported in original study)."
+
+## Adding them one at a time
+#txt_1
+p1 <- forestploter::insert_text(p1, 
+                             row = 18,
+                             text = txt_1,
+                             gp = grid::gpar(fontsize = 10),
+                             just = "left")
+#txt_2
+p1 <- forestploter::insert_text(p1, 
+                             row = 19,
+                             text = txt_2,
+                             gp = grid::gpar(fontsize = 10),
+                             just = "left")
+
+#txt_3
+p1 <- forestploter::insert_text(p1, 
+                             row = 20,
+                             text = txt_3,
+                             gp = grid::gpar(fontsize = 10),
+                             just = "left")
+#txt_4
+p1 <- forestploter::insert_text(p1, 
+                             row = 21,
+                             text = txt_4,
+                             gp = grid::gpar(fontsize = 10),
+                             just = "left")
 ```
 
