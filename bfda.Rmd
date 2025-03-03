@@ -25,144 +25,103 @@ The general workflow we will follow:
 3. Repeatedly draw random samples from this population
 4. Compute the BF for each sample
 
-#### Requirements
-```{r}
-# Define a dummy model and its parameters
-y = a + bx  # simple linear regression (do not run this line - will throw error)
-b_values <- rnorm(50, mean = 0.5, sd = 0.8) # Define a distribution for our "effect size", i.e. for the parameter b 
-a <- 3 # for now, we keep a constant because it simplifies calculations
-x <- 0.2 # we also keep x constant for now
-
-# Define parameters for our fixed-n design
-num_sim <- 500 # number of simulations for each value of a 
-bf_threshold <- 3 # bfs which we are accepting for evidence in favour of H1
-n <- 12 # n of participants
-
-```
-
-#### Creating a for loop to calculate the power
-We want to:
-1. Loop over different values of b (effect sizes)
-2. For each of them, run 1000 simulations where
-- x is randomly sampled from a normal distribution 
-- y is calculated using a linear regression formula
-- the BF is computed
-- All 1000 BFs are stored
-3. After the 1000 simulations have been run, we compute power as the proportion of BFs > specific threshold 
-4. We store the results in a dataframe 
-```{r}
-# Store power results (empty for now)
-power_results <- numeric(length(b_values))
-
-# Loop over different values of b
-for (i in base::seq_along(b_values)) {
-  b <- b_values[i]
-  bf_list <- numeric(num_sim)
-
-  # Inner loop for 1000 simulations and generation of BFs
-  for (j in base::seq_len(num_sim)) {
-    # Simulate data
-    x <- rnorm(n, mean = 2, sd = 0.8)  # Allow x to vary
-    y <- a + b*x + rnorm(n, mean = 0, sd = 1)  # Add some noise 
-  
-    # Compute Bayes Factor
-    data <- data.frame(y = y, x = x)
-    bf <- BayesFactor::lmBF(y ~ x, data = data) # should we rather use regressionBF?
-   
-    # Extract BF value
-    bf_extracted <- BayesFactor::extractBF(bf)$bf
-    if (is.na(bf_extracted)) {
-      print(paste("BF is NA at i =", i, "j =", j))  # Print if BF is NA
-    }
-    
-    bf_list[j] <- bf_extracted
-    
-  }
-
-  # Compute power as proportion of BFs above threshold
-  power_results[i] <- as.numeric(sum(bf_list > bf_threshold) / length(bf_list))
-}
-
-# Output results
-power <- data.frame(b_values, power_results) %>%
-  mutate(power_per = power_results*100)
-```
-
-#### Visualising the power based on values in b
-```{r}
-ggplot2::ggplot() +
-  geom_jitter(data = power, aes(x = b_values, y = power_per))
-```
-
-### New approach based on Lucien's input
 
 #### Requirements
 - We define a model for the data we are interested in collecting in our experiment. For example y = a + b*x. Let's imagine that y is melatonin suppression response and x is menstrual cycle phase. 
 - We define a sample size of n=12
-- We assume that a and b have a normal distribution with mean mean_a (10 possible values) and mean_b (10 possible values)
-- We assume that the sd of a and the sd of b are fixed, i.e. sd_a = 2, sd_b = 5
+- We assume that a and b have a normal distribution with mean mean_a (5 possible values) and mean_b (5 possible values)
+- We assume that the sd of a and the sd of b are fixed, i.e. sd_a = 0.1, sd_b = 0.1
 - We also define that x is menstrual cycle phase, so it can only assume 4 values
 ```{r}
+library(tidyverse)
+library(BayesFactor)
+
 n_ids <- 12 # participant n
-means_a <- seq(0,9,1) # possible means of a 
-means_b <- seq(0, 0.9, 0.1) # possible means of b
+means_a <- seq(0,4,1) # possible means of a 
+means_b <- seq(0, 0.4, 0.1) # possible means of b
 x_vals <- seq(1,4,1) # menstrual cycle phase
-sd_a <- 2 # sd of a
-sd_b <- 5 # sd of b
-num_sim <- 10
-bf_threshold <- 3
+sd_a <- 0.1 # sd of a
+sd_b <- 0.1 # sd of b
+num_sim <- 1000 # number of simulations
+bf_threshold <- 3 # threshold for Bayes Factor
 ```
 
 ### Running the simulations and generating data
+We will run 1000 simulations for each combination of mean_a and mean_b. For each simulation, we will generate data for each participant by solving the equation y=a + bx. We will then compute the Bayes Factor for each simulation. We will then calculate the True Positive Rate (TPR) for each combination of mean_a and mean_b. The TPR is defined as the number of BFs that are greater than the threshold divided by the total number of BFs. We will store the results in a dataframe with columns mean_a, mean_b, and TPR. We will then plot this as a heatmap with the x-axis as mean_a, the y-axis as mean_b, and each cell containing the TPR. Fake code as follows:
 ```{r}
-for each of the 10 mean_a in means_a
-  for each of the 10 mean_b in means_b
-    Run 1000 simulations of the following
-      for each id in n_ids (12)
-        for each of the 4 values of x:
-          #generate data by solving the equation y=a + bx
-          y = rnrom(1, mean_a, sd_a) + rnorm(1, mean_b, sd_b)*x #sampling a and b from their normal distribution
-      get the BF for this one simulation (BayesFactor package compares automatically to identical simulation for the null model, i.e. where the mean_a is 0)
-    get the 1000 BFs
-    Calculate the TPR for that combination of mean_a and mean_b #there will be 100 combinations (10x10), (n bf values > threshold/number of total BFs, in this case 1000) - store this is a df where we have mean_a, mean_b, and TPR as cols 
+# for each of the 10 mean_a in means_a
+#   for each of the 10 mean_b in means_b
+#     Run 1000 simulations of the following
+#       for each id in n_ids (12)
+#         for each of the 4 values of x:
+#           #generate data by solving the equation y=a + bx
+#           y = rnrom(1, mean_a, sd_a) + rnorm(1, mean_b, sd_b)*x #sampling a and b from their normal distribution
+#       get the BF for this one simulation (BayesFactor package compares automatically to identical simulation for the null model, i.e. where the mean_a is 0)
+#     get the 1000 BFs
+#     Calculate the TPR for that combination of mean_a and mean_b #there will be 100 combinations (10x10), (n bf values > threshold/number of total BFs, in this case 1000) - store this is a df where we have mean_a, mean_b, and TPR as cols 
     
-Plot this as a heatmap with x axis = mean_a, y axis = mean b, and each cell containing the TPR
+# Plot this as a heatmap with x axis = mean_a, y axis = mean b, and each cell containing the TPR
 ```
 
+Real code
 ```{r}
-
 # Store results
 results <- data.frame(mean_a = numeric(), mean_b = numeric(), TPR = numeric())
 
-# Loop over values of mean_a and mean_b
 for (mean_a in means_a) {
   for (mean_b in means_b) {
     bf_list <- numeric(num_sim)  # Store BFs for simulations
     print(paste0("Simualtion for mean_a ", mean_a, "and mean_b ", mean_b)) 
-          
     # Run simulations
     for (sim in seq_len(num_sim)) {
       # Generate data for all participants
-      data <- data.frame(
-        id = rep(1:n_ids, each = length(x_vals)),  # Repeat each id for 4 x-values
-        x = rep(x_vals, times = n_ids),  # Cycle phase values for each participant
-        a = rnorm(n_ids, mean_a, sd_a),  # Sample a for each participant
-        b = rnorm(n_ids, mean_b, sd_b)   # Sample b for each participant
-      )
-      data$y <- data$a + data$b * data$x  # Compute y
- 
-    # Compute Bayes Factor
-      bf <- BayesFactor::lmBF(y ~ x, data = data)
-      bf_list[sim] <- as.numeric(BayesFactor::extractBF(bf)$bf)  # Extract BF value
-      
-    # Compute True Positive Rate (TPR)
-    TPR <- as.numeric(sum(bf_list > bf_threshold) / length(bf_list))
+      a <- rnorm(1, mean_a, sd_a)   # Sample a for each participant
+      b <- rnorm(1, mean_b, sd_b)   # Sample b for each participant
+      sim_data <- base::expand.grid(id=1:n_ids,x=x_vals)  # Create data frame with all combinations of id and x
+      sim_data$y <- a + b*sim_data$x + rnorm(nrow(sim_data),mean=0,sd=0.5)
 
-    # Store in results
-    results <- rbind(results, data.frame(mean_a = mean_a, mean_b = mean_b, TPR = TPR))
+      # Compute Bayes Factor
+      bf <- BayesFactor::lmBF(y ~ x, data = sim_data)
+      bf_list[sim] <- as.numeric(BayesFactor::extractBF(bf)$bf)  # Extract BF value 
     }
+    
+  # Compute True Positive Rate (TPR)
+  TPR <- as.numeric(sum(bf_list > bf_threshold) / length(bf_list))
+  # Store in results
+  results <- rbind(results, data.frame(mean_a = mean_a, mean_b = mean_b, TPR = TPR))
   }
 }
-    
+
+# Plot heatmap
+ggplot(results,aes(x=mean_a,y=mean_b))+
+  geom_tile(aes(fill=TPR), colour = "black")+
+  geom_text(aes(label=TPR), colour = "white") +
+  labs(title = "True positive rate for different means of a and b parameters",
+       x = "Mean a",
+       y = "Mean b") +
+  coord_fixed(ratio=1) + 
+  theme(aspect.ratio = 1)
+```
+### Suggestions for improvement
+```{r}
+# If you want to write this code more generally for a given model
+# Define a function to act as your model, taking in the parameters
+# model_func <- function(a,b,c,d,e,f,g,x) {
+#   y <- #model, for example a + b*x
+#   return y
+
+# Define the results with all combinations of your parameter means (and sds if you cycle over them)
+
+# results <- expand.grid(mean_a = means_a, mean_b = means_b)
+# results$TPR <- NA
+
+#instead of looping over the means (for mean_a in means_a, for mean_b in means_b, etc.) loop over the rows
+# for row in results$rows {
+#   mean_a <- row$mean_a
+#   mean_b <- row$mean_b  ..... etc.
+
+    #instead of writing the function again, just call the model_func you defined above.
+    # sim_data$y <- model_func(a,b,x) + noise
+# }
 ```
 
