@@ -1,0 +1,14 @@
+
+### Initialising the R environment
+```{r}
+# Check if `renv` is installed, if not, install it
+if (!requireNamespace("renv", quietly = TRUE)) {
+  install.packages("renv")
+}
+
+# Restore the environment from renv.lock
+renv::autoload()
+renv::restore()
+
+cat("Environment setup complete! All packages from renv.lock are installed and ready to use")
+```
