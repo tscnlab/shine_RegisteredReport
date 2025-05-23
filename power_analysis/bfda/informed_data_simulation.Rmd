@@ -1,0 +1,105 @@
+---
+title: "data_simulation"
+author: "Carolina Guidolin"
+date: "2025-05-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Using data from Fernandez-Alonso et al (2025) to create set of plasuible distribution values for our model
+
+Model of interest to test CH3a:
+melatonin suppression = E2 levels + P4 levels + (E2 | PID) + (P4 | PID), where E2 = estradiol levels, P4 = progesterone levels, and PID = participant ID.
+
+We first import melatonin suppression data to get
+
+1. Define a list of potential distribution for intercept 
+2. Define a list of potential distribution for the slope of E2 (first predictor) - mean and SD, with SD = 10% of the mean
+3. Define a list of potential distribution for the slope of P4 (second predictor) - mean and SD, with SD = 10% of the mean
+4. Define a range for the values of E2 and P4
+5. Define noise distribution with mean 0 and SD 5
+6. For each combination of the distribution and values of E2 and P4, create fake data y (i.e. melatonin suppression) for that model - for the same combination do this 100 times, meaning for each combination you get 100 values of y
+7. Calculate the mean and SD of the fake data of this one y 
+8. Compare to Maydel's data and re-iterate - define a criterion for what "good" and "bad" combinations of the parameter distributions (e.g. anything that is + or - 20% away fro mean of Maydel's data)
+
+```{r}
+y = intercept + slope1*E2 + slope2*P4 + noise
+```
+
+## Define variables specified above
+```{r}
+intercept_mean_list <- list(1, 10, 100)
+e2_slope_mean_list <- list(0.1, 1, 10)
+p4_slope_mean_list <- list(0.1, 1, 10)
+e2_min_value <- 0.5
+e2_max_value <- 150
+p4_min_value <- 0.5
+p4_max_value <- 150
+num_simulations <- 100
+
+maydel_mean <- 50
+maydel_sd <- 10
+```
+
+## Create for loop 
+```{r}
+# Create empty data frame to store results
+fake_data_results <- data.frame(intercept_mean = numeric(),
+                                e2_slope_mean = numeric(),
+                                p4_slope_mean = numeric(),
+                                mean_y = numeric(),
+                                sd_y = numeric(),
+                                accepted = factor())
+
+for (intercept_mean in intercept_mean_list) { # loop over possible intercept means
+  for (e2_slope_mean in e2_slope_mean_list) { # loop over possible e2 slope means
+    for (p4_slope_mean in p4_slope_mean_list) # loop over possible p4 slope means
+      
+      # Simulate 100 samples of y for each parameter combination
+      y <- numeric(num_simulations)
+      for (sim in seq_len(num_simulations)) {
+        
+        # Sample E2 and P4 from uniform distribution
+        e2_value <- runif(1, e2_min_value, e2_max_value)
+        p4_value <- runif(1, p4_min_value, p4_max_value)
+        
+        # Noise ~ N(0, 5)
+        noise <- rnorm(1, mean = 0, sd = 5)
+        
+        # Intercept ~ N(intercept_mean, 10% of intercept_mean)
+        intercept <- rnorm(1, mean = intercept_mean, sd = 0.1 * intercept_mean)
+        
+        # Slopes ~ N(slope_mean, 10% of slope_mean)
+        e2_slope <- rnorm(1, mean = e2_slope_mean, sd = 0.1 * e2_slope_mean)
+        p4_slope <- rnorm(1, mean = p4_slope_mean, sd = 0.1 * p4_slope_mean)
+        
+        # Model
+        y[sim] <- intercept + e2_slope * e2_value + p4_slope * p4_value + noise
+      }
+    
+    # Calculate summary stats of y
+      mean_y <- mean(y)
+      sd_y <- sd(y)
+      
+      # Determine if the mean is within ±20% of Maydel's mean
+      accepted <- ifelse(abs(mean_y - maydel_mean) <= 0.2 * maydel_mean, "yes", "no")
+      
+      # Store results
+      fake_data_results <- rbind(fake_data_results,
+                                 data.frame(intercept_mean = intercept_mean,
+                                            e2_slope_mean = e2_slope_mean,
+                                            p4_slope_mean = p4_slope_mean,
+                                            mean_y = mean_y,
+                                            sd_y = sd_y,
+                                            accepted = factor(accepted)))
+  }
+}
+
+write.csv(fake_data_results, "fake_data_results.csv", row.names = FALSE)
+
+
+```
+
