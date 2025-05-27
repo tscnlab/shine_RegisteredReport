@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+```
+
+
 # Using data from Fernandez-Alonso et al (2025) to create set of plasuible distribution values for our model
 
 Model of interest to test CH3a:
@@ -28,26 +33,55 @@ We first import melatonin suppression data to get
 ```{r}
 y = intercept + slope1*E2 + slope2*P4 + noise
 ```
+## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://www.biorxiv.org/content/10.1101/2025.01.15.633125v2.full)
 
-## Define variables specified above
+We use this data as reference data to understand the range of possible melatonin suppression values given a light exposure of ~90 melanopic EDI (here condition = "bright light"). This experiment was performed with virtually the same protocol as the one we are designing, i.e. light exposure of same intensity presented at the same circadian time and using the same VR headset system. While most participants in this study did not have a dilated pupil (and in our study all participants will have dilated pupil during light exposure), we still consider these findings to be informative for our sample size calculation. 
+
 ```{r}
-intercept_mean_list <- list(1, 10, 100)
-e2_slope_mean_list <- list(0.1, 1, 10)
-p4_slope_mean_list <- list(0.1, 1, 10)
-e2_min_value <- 0.5
-e2_max_value <- 150
-p4_min_value <- 0.5
-p4_max_value <- 150
+# Importing data
+mlt_data <- read.csv("VR_paper_melatonin_results.csv")
+
+# Calculating summary statistics
+mlt_data_summary <- mlt_data %>%
+  summarise(mean = mean(mel_supp),
+            sd = sd(mel_supp),
+            median = median(mel_supp),
+            iqr = IQR(mel_supp),
+            q1 = quantile(mel_supp, 0.25),
+            q3 = quantile(mel_supp, 0.75))
+```
+
+This gives us an average melatonin suppression of 33.32±48.28. The large SD indicate inter-individual variability in melatonin suppression to the same stimulus (i.e. bright light). 
+
+## Given our model of interest, we now start to assign values to the variables in the model
+We want to assign a lot of possible values to our predictors, and check how this influences the predicted variable y (melatonin suppression). The goal is to identified a set of predictor values which lead to physiologically-relevant y values, i.e. in line with what observed in the data we already have. Note that we do need to have a range of possible values for E2 and P4. We take values from [Anckaert et al., (2021)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8042396/), who have analysed E2 and P4 levels at various phases on the menstrual cycle. Although they analyse serum levels and not plasma levels, and use immunoassays instead of LC-MS as we plan to, this data is the most informative that we can use for our study (due to lack of reporting of plasma hormone levels across the cycle using LC-MS). The data is expressed in pmol/L for E2 and nmol/L for P4.
+- E2 min value (early follicular phase) = 75.5 pmol/L
+- E2 max value (peri-ovulatory phase) = 2212 pmol/L
+- P4 min value (early follicular phase) = 0.159 nmol/L
+- P4 max value (intermediate luteal phase) = 66.5 nmol/L
+
+```{r}
+# We start by defining variables of our model 
+intercept_mean_list <- seq(0,70, by = 5)
+e2_slope_mean_list <- seq(0.001, 10, by = 0.01)
+p4_slope_mean_list <- seq(0.001, 10, by = 0.01)
+e2_min_value <- 75.5
+e2_max_value <- 2212
+p4_min_value <- 0.159
+p4_max_value <- 66.5
 num_simulations <- 100
 
-maydel_mean <- 50
-maydel_sd <- 10
+mlt_data_mean <- mlt_data_summary$mean
+mlt_data_sd <- mlt_data_summary$sd
+mlt_data_median <- mlt_data_summary$median
+mlt_data_q1 <- mlt_data_summary$q1
+mlt_data_q3 <- mlt_data_summary$q3
 ```
 
 ## Create for loop 
 ```{r}
 # Create empty data frame to store results
-fake_data_results <- data.frame(intercept_mean = numeric(),
+fake_data_results_2 <- data.frame(intercept_mean = numeric(),
                                 e2_slope_mean = numeric(),
                                 p4_slope_mean = numeric(),
                                 mean_y = numeric(),
@@ -56,11 +90,11 @@ fake_data_results <- data.frame(intercept_mean = numeric(),
 
 for (intercept_mean in intercept_mean_list) { # loop over possible intercept means
   for (e2_slope_mean in e2_slope_mean_list) { # loop over possible e2 slope means
-    for (p4_slope_mean in p4_slope_mean_list) # loop over possible p4 slope means
+    for (p4_slope_mean in p4_slope_mean_list) { # loop over possible p4 slope means
       
       # Simulate 100 samples of y for each parameter combination
       y <- numeric(num_simulations)
-      for (sim in seq_len(num_simulations)) {
+      for (simulation in seq_len(num_simulations)) {
         
         # Sample E2 and P4 from uniform distribution
         e2_value <- runif(1, e2_min_value, e2_max_value)
@@ -76,29 +110,39 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
         e2_slope <- rnorm(1, mean = e2_slope_mean, sd = 0.1 * e2_slope_mean)
         p4_slope <- rnorm(1, mean = p4_slope_mean, sd = 0.1 * p4_slope_mean)
         
+        
         # Model
-        y[sim] <- intercept + e2_slope * e2_value + p4_slope * p4_value + noise
-      }
+        y[simulation] <- intercept + e2_slope * e2_value + p4_slope * p4_value + noise
+      
+        }
     
     # Calculate summary stats of y
-      mean_y <- mean(y)
-      sd_y <- sd(y)
+    mean_y <- mean(y)
+    sd_y <- sd(y)
       
-      # Determine if the mean is within ±20% of Maydel's mean
-      accepted <- ifelse(abs(mean_y - maydel_mean) <= 0.2 * maydel_mean, "yes", "no")
+    # Determine if the mean of y is within q1 and q3 of the known melatonin data 
+    accepted <- ifelse(mean_y >= mlt_data_q1 & mean_y <= mlt_data_q3, "yes", "no")
       
-      # Store results
-      fake_data_results <- rbind(fake_data_results,
-                                 data.frame(intercept_mean = intercept_mean,
-                                            e2_slope_mean = e2_slope_mean,
-                                            p4_slope_mean = p4_slope_mean,
-                                            mean_y = mean_y,
-                                            sd_y = sd_y,
-                                            accepted = factor(accepted)))
+    # Store results
+    fake_data_results_2 <- rbind(fake_data_results_2,
+                               data.frame(intercept_mean = intercept_mean,
+                                          e2_slope_mean = e2_slope_mean,
+                                          p4_slope_mean = p4_slope_mean,
+                                          mean_y = mean_y,
+                                          sd_y = sd_y,
+                                          accepted = factor(accepted)))
+    }
   }
 }
 
-write.csv(fake_data_results, "fake_data_results.csv", row.names = FALSE)
+fake_data_results_2_summary <- fake_data_results_2 %>%
+  filter(accepted == "yes") %>%
+  summarise(mean = mean(mean_y))
+    
+    print(fake_data_results_2_summary)
+
+# Save results as a csv that we can look at 
+#write.csv(fake_data_results, "fake_data_results.csv", row.names = FALSE)
 
 
 ```
