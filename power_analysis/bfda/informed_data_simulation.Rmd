@@ -51,7 +51,7 @@ mlt_data_summary <- mlt_data %>%
             q3 = quantile(mel_supp, 0.75))
 ```
 
-This gives us an average melatonin suppression of 33.32±48.28. The large SD indicate inter-individual variability in melatonin suppression to the same stimulus (i.e. bright light). 
+This gives us an average melatonin suppression of 33.32±48.28 (1SD), and median 41.57 and Q1 = 18.12 and Q3 = 73.77. The large SD indicate inter-individual variability in melatonin suppression to the same stimulus (i.e. bright light). 
 
 ## Given our model of interest, we now start to assign values to the variables in the model
 We want to assign a lot of possible values to our predictors, and check how this influences the predicted variable y (melatonin suppression). The goal is to identified a set of predictor values which lead to physiologically-relevant y values, i.e. in line with what observed in the data we already have. Note that we do need to have a range of possible values for E2 and P4. We take values from [Anckaert et al., (2021)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8042396/), who have analysed E2 and P4 levels at various phases on the menstrual cycle. Although they analyse serum levels and not plasma levels, and use immunoassays instead of LC-MS as we plan to, this data is the most informative that we can use for our study (due to lack of reporting of plasma hormone levels across the cycle using LC-MS). The data is expressed in pmol/L for E2 and nmol/L for P4.
@@ -62,15 +62,35 @@ We want to assign a lot of possible values to our predictors, and check how this
 
 ```{r}
 # We start by defining variables of our model 
-intercept_mean_list <- seq(0,70, by = 5)
-e2_slope_mean_list <- seq(0.001, 10, by = 0.01)
-p4_slope_mean_list <- seq(0.001, 10, by = 0.01)
+# Intercept
+intercept_mean_list <- seq(0, 100, by = 5)
+
+#E2 slope values
+e2_slope_mean_list <- c(
+  seq(0.001, 0.009, length.out = 10),  # values in 0.001–0.009
+  seq(0.01, 0.09, length.out = 10), # values in 0.01–0.09
+  seq(0.1, 0.9, length.out = 10),      # values in 0.1–0.9
+  seq(1, 9, length.out = 10),          # values in 1–9
+  seq(10, 100, length.out = 10)        # values in 10–100
+)
+
+#P4 slope values
+p4_slope_mean_list <- c(
+  seq(0.001, 0.009, length.out = 10),
+  seq(0.01, 0.09, length.out = 10),
+  seq(0.1, 0.9, length.out = 10),
+  seq(1, 9, length.out = 10),
+  seq(10, 100, length.out = 10)
+)
+
+# E2 and P4 values (expressed in pmol/L for E2 and nmol/L for P4)
 e2_min_value <- 75.5
 e2_max_value <- 2212
 p4_min_value <- 0.159
 p4_max_value <- 66.5
 num_simulations <- 100
 
+# Extract known mlt values from mlt_data_summary
 mlt_data_mean <- mlt_data_summary$mean
 mlt_data_sd <- mlt_data_summary$sd
 mlt_data_median <- mlt_data_summary$median
@@ -81,7 +101,7 @@ mlt_data_q3 <- mlt_data_summary$q3
 ## Create for loop 
 ```{r}
 # Create empty data frame to store results
-fake_data_results_2 <- data.frame(intercept_mean = numeric(),
+simulated_data_results <- data.frame(intercept_mean = numeric(),
                                 e2_slope_mean = numeric(),
                                 p4_slope_mean = numeric(),
                                 mean_y = numeric(),
@@ -100,6 +120,10 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
         e2_value <- runif(1, e2_min_value, e2_max_value)
         p4_value <- runif(1, p4_min_value, p4_max_value)
         
+        # Centering E2 and P4 - needed because the given values are on different scales
+        e2_centered <- e2_value - mean(c(e2_min_value, e2_max_value))
+        p4_centered <- p4_value - mean(c(p4_min_value, p4_max_value))
+        
         # Noise ~ N(0, 5)
         noise <- rnorm(1, mean = 0, sd = 5)
         
@@ -112,7 +136,7 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
         
         
         # Model
-        y[simulation] <- intercept + e2_slope * e2_value + p4_slope * p4_value + noise
+        y[simulation] <- intercept + e2_slope*e2_centered + p4_slope*p4_centered + noise
       
         }
     
@@ -124,7 +148,7 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
     accepted <- ifelse(mean_y >= mlt_data_q1 & mean_y <= mlt_data_q3, "yes", "no")
       
     # Store results
-    fake_data_results_2 <- rbind(fake_data_results_2,
+    simulated_data_results <- rbind(simulated_data_results,
                                data.frame(intercept_mean = intercept_mean,
                                           e2_slope_mean = e2_slope_mean,
                                           p4_slope_mean = p4_slope_mean,
@@ -135,15 +159,53 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
   }
 }
 
-fake_data_results_2_summary <- fake_data_results_2 %>%
+simulated_data_results_summary <- simulated_data_results %>%
   filter(accepted == "yes") %>%
-  summarise(mean = mean(mean_y))
+  summarise(min_intercept = min(intercept_mean),
+            max_intercept = max(intercept_mean),
+            min_e2 = min(e2_slope_mean),
+            median_e2 = median(e2_slope_mean),
+            max_e2 = max(e2_slope_mean),
+            min_p4 = min(p4_slope_mean),
+            median_p4 = median(p4_slope_mean),
+            max_p4 = max(p4_slope_mean))
     
-    print(fake_data_results_2_summary)
 
 # Save results as a csv that we can look at 
 #write.csv(fake_data_results, "fake_data_results.csv", row.names = FALSE)
 
 
 ```
+
+## Visualise relationships between simulated variables for intercept and slopes 
+```{r}
+GGally::ggpairs(simulated_data_results[simulated_data_results$accepted == "yes", 
+                                    c("intercept_mean", "e2_slope_mean", "p4_slope_mean")])
+```
+## Other visualisation, for each parameter of interest
+```{r}
+# Filter dataset to only accept values within mlt_data q1 and q3
+accepted_params <- simulated_data_results %>%
+  filter(accepted == "yes")
+
+library(ggplot2)
+
+ggplot(accepted_params, aes(x = intercept_mean)) +
+  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
+  theme_minimal()
+
+ggplot(accepted_params, aes(x = e2_slope_mean)) +
+  geom_histogram(binwidth = 0.1, fill = "salmon", color = "black") +
+  theme_minimal()
+
+ggplot(accepted_params, aes(x = p4_slope_mean)) +
+  geom_histogram(binwidth = 0.1, fill = "lightgreen", color = "black") +
+  theme_minimal()
+
+# Get 10th and 90th percentiles to define "central" range
+intercept_range <- quantile(accepted_params$intercept_mean, probs = c(0.1, 0.9))
+e2_slope_range <- quantile(accepted_params$e2_slope_mean, probs = c(0.1, 0.9))
+p4_slope_range <- quantile(accepted_params$p4_slope_mean, probs = c(0.1, 0.9))
+```
+
 
