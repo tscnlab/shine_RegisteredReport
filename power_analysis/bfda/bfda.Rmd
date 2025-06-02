@@ -39,6 +39,10 @@ melatonin suppression = E2 levels + P4 levels + (E2 + P4 | PID), where E2 = estr
 ## Importing the informed parameters
 These have been calculated in the previous script (informed_data_simulation.Rmd)
 ```{r}
+library(tidyverse)
+library(BayesFactor)
+set.seed(20250602)
+
 informed_parameters <- read.csv("informed_parameters.csv")
 
 # Keep only cols of interest
@@ -50,8 +54,8 @@ informed_parameters <- informed_parameters %>%
 Our full model is:
 y = intercept + e2_slope * e2_value + p4_slope * p4_value + noise
 ```{r}
-library(tidyverse)
-library(BayesFactor)
+
+set.seed(20250602)
 
 # Fixed participant number, dictated by resource limitations
 n_ids <- 12 
@@ -100,6 +104,8 @@ We will run 1000 simulations for each combination of mean_a and mean_b. For each
 
 Real code
 ```{r}
+set.seed(20250602)
+
 # Create empty data frame to store simulated data 
 bfda_simulated_data <- data.frame(intercept_mean = numeric(),
                                   e2_slope_mean = numeric(),
@@ -143,7 +149,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
-      set.seed(20250530)
+      set.seed(20250602)
       bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id +id:e2_value + id:p4_value,
                                    data = sim_data,
                                    whichRandom = "id",
@@ -153,7 +159,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
     
 
       # Compute the Bayes Factor for the null model, with predictor being the id variation
-      set.seed(20250530)
+      set.seed(20250602)
       bf_only_intercept <- BayesFactor::lmBF(y ~ id,
                                    data = sim_data,
                                    whichRandom = "id",
@@ -187,7 +193,42 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 }
 
 ```
+## Visual check to ensure that we did create random intercepts and slopes for E2 and P4
+```{r}
+# Plot y vs e2_value coloured by id
+ggplot(sim_data, aes(x = e2_value, y = y, color = id)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = id), linewidth = 0.8) +
+  labs(title = "Random slopes and intercept check for E2",
+       x = "e2_value",
+       y = "Melatonin suppression") +
+  theme_minimal()
 
+# Plot y vs p4_value coloured by id
+ggplot(sim_data, aes(x = p4_value, y = y, color = id)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, aes(group = id), linewidth = 0.8) +
+  labs(title = "Random slopes and intercept check for P4",
+       x = "p4_value",
+       y = "Melatonin suppression") +
+  theme_minimal()
+```
+
+## Checking TPR as a function of parameters
+
+```{r}
+library(ggplot2)
+
+ggplot(bfda_simulated_data, aes(x = e2_slope_mean, y = p4_slope_mean, fill = TPR)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "blue", high = "red") +
+  labs(title = "TPR across slope combinations",
+       x = "E2 Slope Mean",
+       y = "P4 Slope Mean",
+       fill = "TPR") +
+  theme_minimal()
+
+```
 
 
 ```{r}
@@ -201,12 +242,6 @@ ggplot(bfda_simulated_data,aes(x=e2_slope_mean,y=p4_slope_mean))+
   coord_fixed(ratio=1) + 
   theme(aspect.ratio = 1)
 
- # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
-      set.seed(20250530)
-      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id + id:e2_value + id:p4_value,
-                                   data = sim_data,
-                                   whichRandom = "id") # fitting individual slope and intercept for each id 
-      # This function already calculates the ratio between the full model and a model where the intercept is the grand mean
 ```
 
 
@@ -218,7 +253,7 @@ ggplot(bfda_simulated_data,aes(x=e2_slope_mean,y=p4_slope_mean))+
 ## Next steps
 - Ensure TPR is actually computing he TPR of the 1000 simulations ith the same parameter combination 
 - Play around with values of means of slopes and noise in both this script and informed_data_simulation script
-- plot sim data in 2 plots (one for e2 and p4), with y on the y axis and colour coding by id, and check that we get a different slope and intercept 
+
 
 ### Suggestions for improvement
 ```{r}
