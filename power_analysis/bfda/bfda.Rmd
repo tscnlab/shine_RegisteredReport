@@ -41,7 +41,7 @@ These have been calculated in the previous script (informed_data_simulation.Rmd)
 ```{r}
 library(tidyverse)
 library(BayesFactor)
-set.seed(20250602)
+
 
 informed_parameters <- read.csv("informed_parameters.csv")
 
@@ -55,7 +55,6 @@ Our full model is:
 y = intercept + e2_slope * e2_value + p4_slope * p4_value + noise
 ```{r}
 
-set.seed(20250602)
 
 # Fixed participant number, dictated by resource limitations
 n_ids <- 12 
@@ -79,7 +78,7 @@ p4_min_value <- -1
 p4_max_value <- 1
 
 # Define number of simulations to run
-num_simulations <- 100 
+num_simulations <- 10
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
@@ -112,6 +111,16 @@ bfda_simulated_data <- data.frame(intercept_mean = numeric(),
                                   p4_slope_mean = numeric(),
                                   TPR = numeric()
                                   )
+
+# Create an empty dataframe to store all BFs
+bfda_all_bfs <- data.frame(
+  row = numeric(),
+  simulation = numeric(),
+  intercept_mean = numeric(),
+  e2_slope_mean = numeric(),
+  p4_slope_mean = numeric(),
+  BF = numeric()
+)
 
 # Create a for loop to iterate through the possible combinations of parameters (intercept, e2 slopes, and p4 slope)
 
@@ -149,8 +158,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
-      set.seed(20250602)
-      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id +id:e2_value + id:p4_value,
+      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id,
                                    data = sim_data,
                                    whichRandom = "id",
                                    progress = FALSE) # fitting individual slope and intercept for each id 
@@ -159,7 +167,6 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
     
 
       # Compute the Bayes Factor for the null model, with predictor being the id variation
-      set.seed(20250602)
       bf_only_intercept <- BayesFactor::lmBF(y ~ id,
                                    data = sim_data,
                                    whichRandom = "id",
@@ -175,12 +182,26 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       print(bf_ratio)
       
       # Extract BF value from bf_ratio
-      bf_list[simulation] <- as.numeric(BayesFactor::extractBF(bf_ratio)$bf) 
+      bf_numeric <- as.numeric(BayesFactor::extractBF(bf_ratio)$bf) 
+      bf_list[simulation] <- bf_numeric
       
-    }
+      # Store each BF with its parameters
+      bfda_all_bfs <- rbind(
+        bfda_all_bfs,
+        data.frame(
+        row = row,
+        simulation = simulation,
+        intercept_mean = informed_parameters$intercept_mean[row],
+        e2_slope_mean = informed_parameters$e2_slope_mean[row],
+        p4_slope_mean = informed_parameters$p4_slope_mean[row],
+        BF = bf_numeric
+      )
+    )
+      
+  }
     
   # Compute True Positive Rate (TPR)
-  TPR <- as.numeric(sum(bf_list > bf_threshold) / length(bf_list))
+  TPR <- sum(bf_list > bf_threshold) / num_simulations
   
   # Store in results
   bfda_simulated_data <- rbind(bfda_simulated_data,
