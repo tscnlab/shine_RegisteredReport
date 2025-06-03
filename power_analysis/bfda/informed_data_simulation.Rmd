@@ -84,10 +84,10 @@ We want to assign a lot of possible values to our predictors, and check how this
 intercept_mean_list <- seq(-1, 1, by = 0.5)
 
 #E2 slope values in standardised scale
-e2_slope_mean_list <- seq(-1, 1, by = 0.1)
+e2_slope_mean_list <- seq(-1, 1, by = 0.3)
 
 #P4 slope values in standardised scale
-p4_slope_mean_list <- seq(-1, 1, by = 0.1)
+p4_slope_mean_list <- seq(-1, 1, by = 0.3)
 
 # E2 and P4 values (expressed as standardised values between -1 and 1)
 e2_min_value <- -1

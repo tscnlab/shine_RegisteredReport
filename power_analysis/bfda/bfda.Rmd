@@ -68,9 +68,9 @@ e2_slope_mean_list <- list(informed_parameters$e2_slope_mean)
 p4_slope_mean_list <- list(informed_parameters$p4_slope_mean)
 
 # Fix the standard deviations for the intercept and slopes, based on what we know worked
-intercept_sd <- 0.1
-e2_slope_sd <- 0.1
-p4_slope_sd <- 0.1
+intercept_sd <- 0.3
+e2_slope_sd <- 0.3
+p4_slope_sd <- 0.3
 
 # Specify values of E2 and P4 (expressed as standardised values between -1 and 1)
 e2_min_value <- -1
@@ -79,7 +79,7 @@ p4_min_value <- -1
 p4_max_value <- 1
 
 # Define number of simulations to run
-num_simulations <- 5 
+num_simulations <- 100 
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
@@ -143,7 +143,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       sim_data$y <- intercept[sim_data$id] +
         e2_slope[sim_data$id]*sim_data$e2_value + # e2 slope * e2 value for given id
         p4_slope[sim_data$id]*sim_data$p4_value + # p4 slope * p4 value for given id
-        rnorm(n_ids*4, mean = 0, sd = 0.7) # noise ~ N(0, sd=0.1), for each experiment 
+        rnorm(n_ids*4, mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
       
       print(paste0("Sim data row",nrow(sim_data))) # print number of rows for sim_data
       
@@ -193,6 +193,13 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 }
 
 ```
+
+# Check that the data for each simulation is different - need to simulate 100 different experiments 
+- Check that the parameter combination is different for the 100 simulations with the same parameter combination (see line 130)
+- Store BFs for each simulation combination 
+
+
+
 ## Visual check to ensure that we did create random intercepts and slopes for E2 and P4
 ```{r}
 # Plot y vs e2_value coloured by id
@@ -227,6 +234,11 @@ ggplot(bfda_simulated_data, aes(x = e2_slope_mean, y = p4_slope_mean, fill = TPR
        y = "P4 Slope Mean",
        fill = "TPR") +
   theme_minimal()
+
+```
+```{r}
+hist(bf_list, breaks = 300, main = "Bayes Factors for mid-range slopes", xlab = "BF")
+abline(v = bf_threshold, col = "red")
 
 ```
 
