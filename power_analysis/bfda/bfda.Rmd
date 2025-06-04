@@ -68,9 +68,9 @@ e2_slope_mean_list <- list(informed_parameters$e2_slope_mean)
 p4_slope_mean_list <- list(informed_parameters$p4_slope_mean)
 
 # Fix the standard deviations for the intercept and slopes, based on what we know worked
-intercept_sd <- 0.3
-e2_slope_sd <- 0.3
-p4_slope_sd <- 0.3
+intercept_sd <- 0.2
+e2_slope_sd <- 0.2
+p4_slope_sd <- 0.2
 
 # Specify values of E2 and P4 (expressed as standardised values between -1 and 1)
 e2_min_value <- -1
@@ -79,30 +79,14 @@ p4_min_value <- -1
 p4_max_value <- 1
 
 # Define number of simulations to run
-num_simulations <- 5
+
+num_simulations <- 1
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
 ```
 
-### Running the simulations and generating data
-We will run 1000 simulations for each combination of mean_a and mean_b. For each simulation, we will generate data for each participant by solving the equation y=a + bx. We will then compute the Bayes Factor for each simulation. We will then calculate the True Positive Rate (TPR) for each combination of mean_a and mean_b. The TPR is defined as the number of BFs that are greater than the threshold divided by the total number of BFs. We will store the results in a dataframe with columns mean_a, mean_b, and TPR. We will then plot this as a heatmap with the x-axis as mean_a, the y-axis as mean_b, and each cell containing the TPR. Fake code as follows:
-```{r}
-# for each of the 10 mean_a in means_a
-#   for each of the 10 mean_b in means_b
-#     Run 1000 simulations of the following
-#       for each id in n_ids (12)
-#         for each of the 4 values of x:
-#           #generate data by solving the equation y=a + bx
-#           y = rnrom(1, mean_a, sd_a) + rnorm(1, mean_b, sd_b)*x #sampling a and b from their normal distribution
-#       get the BF for this one simulation (BayesFactor package compares automatically to identical simulation for the null model, i.e. where the mean_a is 0)
-#     get the 1000 BFs
-#     Calculate the TPR for that combination of mean_a and mean_b #there will be 100 combinations (10x10), (n bf values > threshold/number of total BFs, in this case 1000) - store this is a df where we have mean_a, mean_b, and TPR as cols 
-    
-# Plot this as a heatmap with x axis = mean_a, y axis = mean b, and each cell containing the TPR
-```
-
-Real code
+### Running the simulations and generating BFs
 ```{r}
 set.seed(20250602)
 
@@ -144,21 +128,28 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       # Simulate data for n_ids individuals
       # We are making the assumption that E2 and P4 are independent (for simplicity)
       sim_data <- data.frame(
-        id = factor(rep(1:n_ids, each = 4)),
-        e2_value = runif((4*n_ids), e2_min_value, e2_max_value),
-        p4_value = runif((4*n_ids), p4_min_value, p4_max_value)
+        id = factor(rep(1:n_ids, each = 20)),
+        e2_value = runif((20*n_ids), e2_min_value, e2_max_value),
+        p4_value = runif((20*n_ids), p4_min_value, p4_max_value)
         )
       
       # Create values for y by solving the equation and add noise
       sim_data$y <- intercept[sim_data$id] +
         e2_slope[sim_data$id]*sim_data$e2_value + # e2 slope * e2 value for given id
         p4_slope[sim_data$id]*sim_data$p4_value + # p4 slope * p4 value for given id
-        rnorm(n_ids*4, mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
+        rnorm(n_ids*20, mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
+      
+      # Check for absence of NAs in the dataset
+      if (anyNA(sim_data)) {
+        print(sim_data[!complete.cases(sim_data), ])
+        stop(sprintf("NA found in sim_data at row %d, simulation %d", row, simulation))
+        }
       
       print(paste0("Sim data row",nrow(sim_data))) # print number of rows for sim_data
       
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
+
       bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id + id:e2_value + id:p4_value,
                                    data = sim_data,
                                    whichRandom = "id",
@@ -166,9 +157,8 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       # This function already calculates the ratio between the full model and a model where the intercept is the grand mean
       
     
-
       # Compute the Bayes Factor for the null model, with predictor being the id variation
-      bf_only_intercept <- BayesFactor::lmBF(y ~ id,
+      bf_only_intercept <- BayesFactor::lmBF(y ~ id + id:e2_value + id:p4_value,
                                    data = sim_data,
                                    whichRandom = "id",
                                    progress = FALSE) # fitting a different intercept for each id
