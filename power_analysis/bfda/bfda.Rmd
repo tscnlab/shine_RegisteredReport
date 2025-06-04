@@ -128,16 +128,16 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       # Simulate data for n_ids individuals
       # We are making the assumption that E2 and P4 are independent (for simplicity)
       sim_data <- data.frame(
-        id = factor(rep(1:n_ids, each = 20)),
-        e2_value = runif((20*n_ids), e2_min_value, e2_max_value),
-        p4_value = runif((20*n_ids), p4_min_value, p4_max_value)
+        id = factor(rep(1:n_ids, each = 4)),
+        e2_value = runif((4*n_ids), e2_min_value, e2_max_value),
+        p4_value = runif((4*n_ids), p4_min_value, p4_max_value)
         )
       
       # Create values for y by solving the equation and add noise
       sim_data$y <- intercept[sim_data$id] +
         e2_slope[sim_data$id]*sim_data$e2_value + # e2 slope * e2 value for given id
         p4_slope[sim_data$id]*sim_data$p4_value + # p4 slope * p4 value for given id
-        rnorm(n_ids*20, mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
+        rnorm(n_ids*4,mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
       
       # Check for absence of NAs in the dataset
       if (anyNA(sim_data)) {
@@ -158,7 +158,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       
     
       # Compute the Bayes Factor for the null model, with predictor being the id variation
-      bf_only_intercept <- BayesFactor::lmBF(y ~ id + id:e2_value + id:p4_value,
+      bf_only_intercept <- BayesFactor::lmBF(y ~ id ,
                                    data = sim_data,
                                    whichRandom = "id",
                                    progress = FALSE) # fitting a different intercept for each id
@@ -206,12 +206,6 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 
 ```
 
-# Check that the data for each simulation is different - need to simulate 100 different experiments 
-- Check that the parameter combination is different for the 100 simulations with the same parameter combination (see line 130)
-- Store BFs for each simulation combination 
-
-
-
 ## Visual check to ensure that we did create random intercepts and slopes for E2 and P4
 ```{r}
 # Plot y vs e2_value coloured by id
@@ -253,6 +247,17 @@ hist(bf_list, breaks = 300, main = "Bayes Factors for mid-range slopes", xlab = 
 abline(v = bf_threshold, col = "red")
 
 ```
+
+
+## Test with lme4 package
+```{r}
+library(lme4)
+
+lme4::lmer(
+  y ~ e2_value + p4_value + (e2_value | id) + (p4_value - 1 | id) + (1 | id),
+  data = sim_data) |> summary()
+```
+
 
 
 ```{r}
