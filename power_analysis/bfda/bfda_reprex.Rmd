@@ -1,0 +1,87 @@
+---
+title: "bfda_reprex"
+author: "Carolina Guidolin"
+date: "2025-06-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Generate data and perform bfda 
+Issue is BF values correspond to NA
+```{r}
+# Load required package
+library(BayesFactor)
+library(tidyverse)
+
+# Set seed for reproducibility
+set.seed(20250602)
+
+# Define simulation parameters
+n_ids <- 12 # Number of subjects in BFDA
+obs_per_id <- 4 # Observations per subject
+total_obs <- n_ids * obs_per_id
+
+# Simulate subject-specific intercepts and slopes
+intercept_mean <- 0.0
+e2_slope_mean <- 0.5
+p4_slope_mean <- -0.5
+
+intercept_sd <- 0.2
+e2_slope_sd <- 0.1
+p4_slope_sd <- 0.1
+
+intercepts <- rnorm(n_ids, mean = intercept_mean, sd = intercept_sd)
+e2_slopes <- rnorm(n_ids, mean = e2_slope_mean, sd = e2_slope_sd)
+p4_slopes <- rnorm(n_ids, mean = p4_slope_mean, sd = p4_slope_sd)
+
+# Simulate predictors
+sim_data <- data.frame(
+  id = factor(rep(1:n_ids, each = obs_per_id)),
+  e2_value = runif(total_obs, min = 0, max = 1),
+  p4_value = runif(total_obs, min = 0, max = 1)
+)
+
+# Generate response variable with noise
+sim_data$y <- intercepts[sim_data$id] +
+  e2_slopes[sim_data$id] * sim_data$e2_value +
+  p4_slopes[sim_data$id] * sim_data$p4_value +
+  rnorm(total_obs, mean = 0, sd = 0.3)
+
+# Check for NAs
+stopifnot(!anyNA(sim_data))
+
+# Fit full and null Bayes factor models
+# Full model against model with grand intercept only
+bf_full <- BayesFactor::lmBF(
+  y ~ e2_value + p4_value + id + id:e2_value + id:p4_value,
+  data = sim_data,
+  whichRandom = "id",
+  progress = FALSE
+)
+
+# Model with grand intercept only against model with random intercepts for each id
+bf_null <- BayesFactor::lmBF(
+  y ~ id,
+  data = sim_data,
+  whichRandom = "id",
+  progress = FALSE
+)
+
+# Compute ratio - meaning dividing full model by model with random intercepts for each id
+bf_ratio <- bf_full / bf_null
+
+# Print results
+print(bf_full)
+print(bf_null)
+print(bf_ratio)
+
+# Extract numeric BF value
+bf_val <- as.numeric(extractBF(bf_ratio)$bf)
+print(bf_val)
+
+```
+
+
