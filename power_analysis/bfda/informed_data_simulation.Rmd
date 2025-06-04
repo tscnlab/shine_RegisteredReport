@@ -81,13 +81,13 @@ We want to assign a lot of possible values to our predictors, and check how this
 # We start by defining variables of our model 
 
 # Intercept in standardised scale (since now melatonin data does not go from 0 to 100)
-intercept_mean_list <- seq(-1, 1, by = 0.5)
+intercept_mean_list <- seq(-1, 1, by = 0.3)
 
 #E2 slope values in standardised scale
-e2_slope_mean_list <- seq(-1, 1, by = 0.3)
+e2_slope_mean_list <- seq(-0.5, 0.5, by = 0.1)
 
 #P4 slope values in standardised scale
-p4_slope_mean_list <- seq(-1, 1, by = 0.3)
+p4_slope_mean_list <- seq(-0.5, 0.5, by = 0.1)
 
 # E2 and P4 values (expressed as standardised values between -1 and 1)
 e2_min_value <- -1
@@ -105,6 +105,8 @@ mlt_data_standardised_q3 <- mlt_data_standardised_summary$q3
 
 ## Create for loop 
 ```{r}
+set.seed(20250602)
+
 # Create empty data frame to store results
 simulated_data_results <- data.frame(intercept_mean = numeric(),
                                 e2_slope_mean = numeric(),
@@ -129,11 +131,11 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
         noise <- rnorm(1, mean = 0, sd = 0.3)
         
         # Intercept ~ N(intercept_mean, sd = 0.1)
-        intercept <- rnorm(1, mean = intercept_mean, sd = 0.3)
+        intercept <- rnorm(1, mean = intercept_mean, sd = 0.2)
         
         # Slopes ~ N(slope_mean, sd = 0.1)
-        e2_slope <- rnorm(1, mean = e2_slope_mean, sd = 0.3)
-        p4_slope <- rnorm(1, mean = p4_slope_mean, sd = 0.3)
+        e2_slope <- rnorm(1, mean = e2_slope_mean, sd = 0.2)
+        p4_slope <- rnorm(1, mean = p4_slope_mean, sd = 0.2)
         
         
         # Model
