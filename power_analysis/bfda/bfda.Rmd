@@ -47,8 +47,7 @@ informed_parameters <- read.csv("informed_parameters.csv")
 
 # Keep only cols of interest
 informed_parameters <- informed_parameters %>%
-  select(intercept_mean, e2_slope_mean, p4_slope_mean) %>%
-  slice(1:100)
+  select(intercept_mean, e2_slope_mean, p4_slope_mean) 
 ```
 
 ## Defining the parameters for bfda model 
@@ -89,6 +88,9 @@ bf_threshold <- 3
 ### Running the simulations and generating BFs
 ```{r}
 set.seed(20250602)
+
+# Store all simulated datasets for later diagnostics or modeling
+all_sim_data <- list()
 
 # Create empty data frame to store simulated data 
 bfda_simulated_data <- data.frame(intercept_mean = numeric(),
@@ -139,6 +141,9 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
         p4_slope[sim_data$id]*sim_data$p4_value + # p4 slope * p4 value for given id
         rnorm(n_ids*4,mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
       
+      # Save sim_data for later diagnostics
+      all_sim_data[[paste0("row", row, "_sim", simulation)]] <- sim_data
+      
       # Check for absence of NAs in the dataset
       if (anyNA(sim_data)) {
         print(sim_data[!complete.cases(sim_data), ])
@@ -150,7 +155,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
 
-      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id + id:e2_value + id:p4_value,
+      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id,
                                    data = sim_data,
                                    whichRandom = "id",
                                    progress = FALSE) # fitting individual slope and intercept for each id 
@@ -204,6 +209,92 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
                               )
 }
 
+
+```
+
+# Performing LMM on the sim_data (all of the collected sim_data)
+First, we create a function that tests for model fit (i.e. does the model converge, when we run it with an LMM?)
+```{r}
+run_model_diagnostics <- function(model_formula, data_list) {
+  lapply(names(data_list), function(name) {
+    dat <- data_list[[name]]
+    
+    fit <- tryCatch(
+      lmer(model_formula, data = dat),
+      error = function(e) return(list(error = e$message, name = name))
+    )
+    
+    if (inherits(fit, "list")) {
+      return(fit)  # error info
+    }
+    
+    list(
+      name = name,
+      is_singular = isSingular(fit),
+      convergence_warnings = fit@optinfo$conv$lme4$messages,
+      summary = summary(fit)
+    )
+  })
+}
+
+```
+
+# Test model convergence on the all_sim_data
+## Start with maximal model
+```{r}
+model_maximal <- y ~ e2_value + p4_value + (1 + e2_value + p4_value | id)
+
+# Run diagnostics for model_maximal
+diag_model_maximal <- run_model_diagnostics(model_maximal, all_sim_data)
+
+# Turning the model diagnostics into a dataframe
+diagnostic_overview_maximal <- do.call(rbind, lapply(diag_model_maximal, function(x) {
+  if (!is.list(x) || !"name" %in% names(x)) return(NULL)
+  data.frame(
+    sim_name = x$name,
+    is_singular = ifelse("is_singular" %in% names(x), x$is_singular, NA),
+    has_convergence_warning = ifelse("convergence_warnings" %in% names(x) && !is.null(x$convergence_warnings), TRUE, FALSE),
+    error = ifelse("error" %in% names(x), x$error, NA),
+    stringsAsFactors = FALSE
+  )
+}))
+
+# Checking how many models managed to converge
+diagnostic_overview_maximal %>%
+  summarise(
+    num_singular = sum(is_singular, na.rm = TRUE),
+    num_with_convergence_warning = sum(has_convergence_warning, na.rm = TRUE),
+    num_with_error = sum(!is.na(error))
+  )
+```
+
+## Reduced model 1
+We remove random slopes for one of the hormones
+```{r}
+model_reduced_1 <- y ~ e2_value + p4_value + (1 + p4_value | id)
+
+# Run diagnostics for model_reduced_1
+diag_model_reduced_1 <- run_model_diagnostics(model_maximal, all_sim_data)
+
+# Turning the model diagnostics into a dataframe
+diagnostic_overview_model_reduced_1 <- do.call(rbind, lapply(diagnostic_overview_model_reduced_1, function(x) {
+  if (!is.list(x) || !"name" %in% names(x)) return(NULL)
+  data.frame(
+    sim_name = x$name,
+    is_singular = ifelse("is_singular" %in% names(x), x$is_singular, NA),
+    has_convergence_warning = ifelse("convergence_warnings" %in% names(x) && !is.null(x$convergence_warnings), TRUE, FALSE),
+    error = ifelse("error" %in% names(x), x$error, NA),
+    stringsAsFactors = FALSE
+  )
+}))
+
+# Checking how many models managed to converge
+diagnostic_overview_maximal %>%
+  summarise(
+    num_singular = sum(is_singular, na.rm = TRUE),
+    num_with_convergence_warning = sum(has_convergence_warning, na.rm = TRUE),
+    num_with_error = sum(!is.na(error))
+  )
 ```
 
 ## Visual check to ensure that we did create random intercepts and slopes for E2 and P4
