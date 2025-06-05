@@ -79,7 +79,7 @@ p4_max_value <- 1
 
 # Define number of simulations to run
 
-num_simulations <- 1
+num_simulations <- 5
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
@@ -155,7 +155,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
 
-      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id,
+      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id + id:e2_value + id:p4_value,
                                    data = sim_data,
                                    whichRandom = "id",
                                    progress = FALSE) # fitting individual slope and intercept for each id 
@@ -212,7 +212,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
 
 ```
 
-# Performing LMM on the sim_data (all of the collected sim_data)
+# Performing LMM on the sim_data (all of the collected sim_data - with num_simulations = 5)
 First, we create a function that tests for model fit (i.e. does the model converge, when we run it with an LMM?)
 ```{r}
 run_model_diagnostics <- function(model_formula, data_list) {
@@ -263,10 +263,11 @@ diagnostic_overview_maximal <- do.call(rbind, lapply(diag_model_maximal, functio
 diagnostic_overview_maximal %>%
   summarise(
     num_singular = sum(is_singular, na.rm = TRUE),
-    num_with_convergence_warning = sum(has_convergence_warning, na.rm = TRUE),
+    num_with_convergence_warning = sum(!has_convergence_warning, na.rm = TRUE),
     num_with_error = sum(!is.na(error))
   )
 ```
+This shows that more than 50% of the simulated data does not converge. 
 
 ## Reduced model 1
 We remove random slopes for one of the hormones
