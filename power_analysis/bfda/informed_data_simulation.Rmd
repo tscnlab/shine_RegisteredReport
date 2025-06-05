@@ -30,9 +30,6 @@ We first import melatonin suppression data to get
 7. Calculate the mean and SD of the fake data of this one y 
 8. Compare to Maydel's data and re-iterate - define a criterion for what "good" and "bad" combinations of the parameter distributions (e.g. anything that is + or - 20% away fro mean of Maydel's data)
 
-```{r}
-y = intercept + slope1*E2 + slope2*P4 + noise
-```
 ## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://www.biorxiv.org/content/10.1101/2025.01.15.633125v2.full)
 
 We use this data as reference data to understand the range of possible melatonin suppression values given a light exposure of ~90 melanopic EDI (here condition = "bright light"). This experiment was performed with virtually the same protocol as the one we are designing, i.e. light exposure of same intensity presented at the same circadian time and using the same VR headset system. While most participants in this study did not have a dilated pupil (and in our study all participants will have dilated pupil during light exposure), we still consider these findings to be informative for our sample size calculation. 
