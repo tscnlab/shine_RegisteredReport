@@ -14,21 +14,23 @@ library(tidyverse)
 ```
 
 
-# Using data from Fernandez-Alonso et al (2025) to create set of plasuible distribution values for our model
+# Using data from Fernandez-Alonso et al (2025) to create a set of plasuible distribution values for the parameters in our model
 
-Model of interest to test CH3a:
-melatonin suppression = E2 levels + P4 levels + (E2 | PID) + (P4 | PID), where E2 = estradiol levels, P4 = progesterone levels, and PID = participant ID.
+Model of interest to test effects of hormones on melatonin suppression:
+Melatonin suppression = E2 levels + P4 levels + (E2 + P4 | PID),
+where E2 = estradiol levels, P4 = progesterone levels, and PID = participant ID.
 
-We first import melatonin suppression data to get
-
-1. Define a list of potential distribution for intercept 
-2. Define a list of potential distribution for the slope of E2 (first predictor) - mean and SD, with SD = 10% of the mean
-3. Define a list of potential distribution for the slope of P4 (second predictor) - mean and SD, with SD = 10% of the mean
-4. Define a range for the values of E2 and P4
-5. Define noise distribution with mean 0 and SD 5
-6. For each combination of the distribution and values of E2 and P4, create fake data y (i.e. melatonin suppression) for that model - for the same combination do this 100 times, meaning for each combination you get 100 values of y
-7. Calculate the mean and SD of the fake data of this one y 
-8. Compare to Maydel's data and re-iterate - define a criterion for what "good" and "bad" combinations of the parameter distributions (e.g. anything that is + or - 20% away fro mean of Maydel's data)
+The following steps are performed in the code below:
+1. Import melatonin suppression data (32 observations, each from a different participant) and summarise melatonin suppression values in this chort. Note that participants in this dataset mostly did not have dilated pupil (col: pupil_dilation), whereas participants in our experiment will all have dilated pupils. However, they received the same light stimulus intensity and wavelength as the participants in our prospective study, delivered with the same methodology (VR headsets). We believe this is the best approximation for the melatonin suppression levels we will observe in our study, and hence a valid dataset to base of data simulation on.
+2. Standardise melatonin suppression values so that they are on a scale from -1 to 1
+3. Define a list of potential distribution for intercept (standardised scale from -1 to 1)
+4. Define a list of potential distribution for the slope of E2 (first predictor) - mean and SD (standardised scale from -1 to 1)
+3. Define a list of potential distribution for the slope of P4 (second predictor) - mean and SD (standardised scale from -1 to 1)
+4. Define a range for the values of E2 and P4 (standardised scale from -1 to 1)
+5. Define noise distribution with mean 0 and SD 0.3
+6. For each combination of the distribution and values of E2 and P4, simulate data y (i.e. melatonin suppression) for that model - for the same combination do this 100 times, meaning for each combination you get 100 values of y
+7. Calculate the mean and SD of the simulated data of this one y 
+8. Compare to reference data and accept values falling within the first and third quantile of the reference data. These values will then be saved and selected for bfda simulations.
 
 ## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://www.biorxiv.org/content/10.1101/2025.01.15.633125v2.full)
 
@@ -54,6 +56,10 @@ mlt_data_standardised <- mlt_data %>%
   mutate(mel_supp_standardised = (mel_supp - mean(mel_supp))/sd(mel_supp)
   )
 
+## QUESTION! The data above is kind of standardised from -1 to 1 but not precisely, i.e. some values are slightly above -1 and 1. Should this formula (mix max scaling) be used instead?
+# mutate(mel_supp_minmax = 2 * ((mel_supp - min(mel_supp)) / (max(mel_supp) - min(mel_supp)) - 0.5))
+
+
 # Calculating summary statistics on standardised data 
 mlt_data_standardised_summary <- mlt_data_standardised %>%
   summarise(mean = mean(mel_supp_standardised),
@@ -65,18 +71,10 @@ mlt_data_standardised_summary <- mlt_data_standardised %>%
 
 ```
 
-This gives us an average melatonin suppression of 33.32±48.28 (1SD), and median 41.57 and Q1 = 18.12 and Q3 = 73.77. The large SD indicate inter-individual variability in melatonin suppression to the same stimulus (i.e. bright light). 
-
 ## Given our model of interest, we now start to assign values to the variables in the model
-We want to assign a lot of possible values to our predictors, and check how this influences the predicted variable y (melatonin suppression). The goal is to identified a set of predictor values which lead to physiologically-relevant y values, i.e. in line with what observed in the data we already have. Note that we do need to have a range of possible values for E2 and P4. We take values from [Anckaert et al., (2021)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8042396/), who have analysed E2 and P4 levels at various phases on the menstrual cycle. Although they analyse serum levels and not plasma levels, and use immunoassays instead of LC-MS as we plan to, this data is the most informative that we can use for our study (due to lack of reporting of plasma hormone levels across the cycle using LC-MS). The data is expressed in pmol/L for E2 and nmol/L for P4.
-- E2 min value (early follicular phase) = 75.5 pmol/L
-- E2 max value (peri-ovulatory phase) = 2212 pmol/L
-- P4 min value (early follicular phase) = 0.159 nmol/L
-- P4 max value (intermediate luteal phase) = 66.5 nmol/L
+We want to assign a lot of possible values to our predictors, and check how this influences the predicted variable y (melatonin suppression). The goal is to identify a set of predictor values which lead to physiologically-relevant y values, i.e. in line with what observed in the data we already have. Note that we do need to have a range of possible values for E2 and P4. Again, we express these using a standardised scale here (-1 to 1). 
 
 ```{r}
-# We start by defining variables of our model 
-
 # Intercept in standardised scale (since now melatonin data does not go from 0 to 100)
 intercept_mean_list <- seq(-1, 1, by = 0.3)
 
@@ -100,7 +98,7 @@ mlt_data_standardised_q1 <- mlt_data_standardised_summary$q1
 mlt_data_standardised_q3 <- mlt_data_standardised_summary$q3
 ```
 
-## Create for loop 
+## Simulate data (each combination repeated 100 times)
 ```{r}
 set.seed(20250602)
 
@@ -124,13 +122,13 @@ for (intercept_mean in intercept_mean_list) { # loop over possible intercept mea
         e2_value <- runif(1, e2_min_value, e2_max_value)
         p4_value <- runif(1, p4_min_value, p4_max_value)
         
-        # Noise ~ N(0, sd = 0.1)
+        # Noise ~ N(0, sd = 0.3)
         noise <- rnorm(1, mean = 0, sd = 0.3)
         
-        # Intercept ~ N(intercept_mean, sd = 0.1)
+        # Intercept ~ N(intercept_mean, sd = 0.2)
         intercept <- rnorm(1, mean = intercept_mean, sd = 0.2)
         
-        # Slopes ~ N(slope_mean, sd = 0.1)
+        # Slopes ~ N(slope_mean, sd = 0.2)
         e2_slope <- rnorm(1, mean = e2_slope_mean, sd = 0.2)
         p4_slope <- rnorm(1, mean = p4_slope_mean, sd = 0.2)
         
@@ -173,6 +171,10 @@ accepted_params_summary <- accepted_params %>%
             min_p4 = min(p4_slope_mean),
             median_p4 = median(p4_slope_mean),
             max_p4 = max(p4_slope_mean))
+
+# This should lead to 468 accepted observations. QUESTION! Are we iterating over the same combinations of parameters multiple times "by accident", since the values for the e2 and p4 slopes are the same (-0.5 to 0.5)? Is this a problem?
+# Check using 
+# any(duplicated(accepted_params)) - yields FALSE
 ```
 
 ## Visualise relationships between simulated variables for intercept and slopes 
@@ -197,7 +199,7 @@ ggplot(accepted_params, aes(x = p4_slope_mean)) +
   geom_histogram(binwidth = 0.1, fill = "lightgreen", color = "black") +
   theme_minimal()
 ```
-We now have a list of parameters for the intercept, the slope of E2 and the slope of P4 which we know yield values of y (melatonin suppression) that match the melatonin suppression data. Note that these values are calculated for standardised E2, P4 and melatonin suppression data. We now want to save these "accepted" values to perform BFDA on them. 
+We now have a list of parameters for the intercept, the slope of E2 and the slope of P4 which we know yield values of y (melatonin suppression) that match the melatonin suppression data we have. Note that these values are calculated for standardised E2, P4 and melatonin suppression data. We now want to save these "accepted" values to perform BFDA on them. 
 
 ## Save data in a csv which we can import in another script for the bfda
 ```{r}
