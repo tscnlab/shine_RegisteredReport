@@ -53,7 +53,7 @@ p4_min_value <- -1
 p4_max_value <- 1
 
 # Define number of simulations to run
-num_simulations <- 5 # should ideally be 1000, but simulation crashed when trying values >10 
+num_simulations <- 1000 # should ideally be 1000, but simulation crashed when trying values >10 
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
@@ -70,21 +70,10 @@ bfda_simulated_data <- data.frame(intercept_mean = numeric(),
                                   TPR = numeric()
                                   )
 
-# Create an empty dataframe to store all BFs
-bfda_all_bfs <- data.frame(
-  row = numeric(),
-  simulation = numeric(),
-  intercept_mean = numeric(),
-  e2_slope_mean = numeric(),
-  p4_slope_mean = numeric(),
-  BF = numeric()
-)
-
 # Create a for loop to iterate through the possible combinations of parameters (intercept, e2 slopes, and p4 slope)
 
 for (row in 1:nrow(informed_parameters)) { # looping through each row of the informed_parameter dataframe
-  
-  # QUESTION! Is this for loop perhaps the reason why it takes so long to run? Should we use expand.grid() instead?
+  print(paste0("Row:", row))
     
   # Store BFs for simulations
     bf_list <- numeric(num_simulations)  
@@ -92,8 +81,7 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
     # Run simulations: for each combination, repeat the simulation n times 
     for (simulation in seq_len(num_simulations)) {
       
-      print(paste0("Row:", row))
-      print(paste0("Simulation:", simulation))
+      # print(paste0("Simulation:", simulation))
       
       # Sample intercept and slopes from normal distribution of defined parameters
       intercept <- rnorm(n_ids, mean = informed_parameters$intercept_mean[row], sd = intercept_sd)
@@ -114,20 +102,24 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
         p4_slope[sim_data$id]*sim_data$p4_value + # p4 slope * p4 value for given id
         rnorm(n_ids*4,mean = 0, sd = 0.3) # noise ~ N(0, sd=0.3), for each experiment 
       
+      sim_data$id0 <- sim_data$id # Keep a copy of id for later use
+      
       # Check for absence of NAs in the dataset
       if (anyNA(sim_data)) {
         print(sim_data[!complete.cases(sim_data), ])
         stop(sprintf("NA found in sim_data at row %d, simulation %d", row, simulation))
         }
       
-      print(paste0("Sim data row",nrow(sim_data))) # print number of rows for sim_data
+      # print(paste0("Sim data row: ",nrow(sim_data))) # print number of rows for sim_data
+      # print(head(sim_data)) # print first few rows of sim_data
       
 
       # Compute Bayes Factor for full model, with predictors being e2 and p4 levels
-      bf_full <- BayesFactor::lmBF(y ~ e2_value + p4_value + id,
-                                   data = sim_data,
-                                   whichRandom = "id",
-                                   progress = FALSE) # fitting individual intercept for each id 
+      bf_full <- BayesFactor::lmBF(
+                                  y ~ e2_value + p4_value + id + id0:p4_value + id0:e2_value,
+                                  data = sim_data,
+                                  whichRandom = "id",
+                                  progress = FALSE) # fitting individual intercept for each id 
       # This function already calculates the ratio between the full model and a model where the intercept is the grand mean
       
     
@@ -142,9 +134,9 @@ for (row in 1:nrow(informed_parameters)) { # looping through each row of the inf
       # So we are effectively taking a ratio between the full model and a model where the intercept is different for id
       bf_ratio <- bf_full/bf_only_intercept
       
-      print(bf_full)
-      print(bf_only_intercept)
-      print(bf_ratio)
+      # print(bf_full)
+      # print(bf_only_intercept)
+      # print(bf_ratio)
       
       # Extract BF value from bf_ratio
       bf_numeric <- as.numeric(BayesFactor::extractBF(bf_ratio)$bf) 
@@ -198,7 +190,83 @@ ggplot(bfda_simulated_data, aes(x = e2_slope_mean, y = p4_slope_mean)) +
     axis.title = element_text(size = 12)
   )
 
-# QUESTION! -- since the values we are iterating over (means of e2 and p4 slopes are the same, i.e. range from -0.5 to 0.5, does that mean that we have rows that are the same, i.e. are we iterating multiple times over the same combination? If so, is that a problem?)
+```
+
+
+```{r}
+bfda_simulated_data <- read.csv("bfda_simulated_data.csv")
+
+library(dplyr)
+all.equal(bfda_simulated_data_parallel, bfda_simulated_data)
+
+```
+
+```{r}
+# Run parallel simulations
+bfda_simulated_data_parallel_1000 <- future_map_dfr(1:nrow(informed_parameters), function(row) {
+  
+  bf_list <- numeric(num_simulations)
+  
+  for (simulation in seq_len(num_simulations)) {
+    
+    intercept <- rnorm(n_ids, mean = informed_parameters$intercept_mean[row], sd = intercept_sd)
+    e2_slope  <- rnorm(n_ids, mean = informed_parameters$e2_slope_mean[row], sd = e2_slope_sd)
+    p4_slope  <- rnorm(n_ids, mean = informed_parameters$p4_slope_mean[row], sd = p4_slope_sd)
+    
+    sim_data <- data.frame(
+      id = factor(rep(1:n_ids, each = 4)),
+      e2_value = runif(4 * n_ids, e2_min_value, e2_max_value),
+      p4_value = runif(4 * n_ids, p4_min_value, p4_max_value)
+    )
+    
+    sim_data$y <- intercept[sim_data$id] +
+      e2_slope[sim_data$id] * sim_data$e2_value +
+      p4_slope[sim_data$id] * sim_data$p4_value +
+      rnorm(n_ids * 4, mean = 0, sd = 0.3)
+    
+    sim_data$id0 <- sim_data$id
+    
+    if (anyNA(sim_data)) stop(sprintf("NA found in sim_data at row %d, simulation %d", row, simulation))
+    
+    bf_full <- BayesFactor::lmBF(
+      y ~ e2_value + p4_value + id + id0:p4_value + id0:e2_value,
+      data = sim_data,
+      whichRandom = "id",
+      progress = FALSE
+    )
+    
+    bf_only_intercept <- BayesFactor::lmBF(
+      y ~ id,
+      data = sim_data,
+      whichRandom = "id",
+      progress = FALSE
+    )
+    
+    bf_ratio <- bf_full / bf_only_intercept
+    bf_list[simulation] <- as.numeric(BayesFactor::extractBF(bf_ratio)$bf)
+  }
+  
+  TPR <- sum(bf_list > bf_threshold) / num_simulations
+  
+  # Return one row per `row`
+  tibble::tibble(
+    intercept_mean = informed_parameters$intercept_mean[row],
+    e2_slope_mean  = informed_parameters$e2_slope_mean[row],
+    p4_slope_mean  = informed_parameters$p4_slope_mean[row],
+    TPR = TPR
+  )
+},
+.options = furrr_options(seed = 20250602) # setting seed so we always get the same thing 
+)
+
+write.csv(bfda_simulated_data_parallel_1000, "bfa_simulated_data_1000_parallelised.csv", row.names = FALSE)
+
+
+```
+
+```{r}
+write.csv(bfda_simulated_data_parallel1, "bfa_simulated_data_100_parallelised1.csv", row.names = FALSE)
+write.csv(bfda_simulated_data_parallel, "bfa_simulated_data_100_parallelised.csv", row.names = FALSE)
 
 ```
 

@@ -30,8 +30,8 @@ e2_slope_mean <- 0.5
 p4_slope_mean <- -0.5
 
 intercept_sd <- 0.2
-e2_slope_sd <- 0.1
-p4_slope_sd <- 0.1
+e2_slope_sd <- 0.2
+p4_slope_sd <- 0.2
 
 intercepts <- rnorm(n_ids, mean = intercept_mean, sd = intercept_sd)
 e2_slopes <- rnorm(n_ids, mean = e2_slope_mean, sd = e2_slope_sd)
@@ -40,8 +40,8 @@ p4_slopes <- rnorm(n_ids, mean = p4_slope_mean, sd = p4_slope_sd)
 # Simulate predictors
 sim_data_reprex <- data.frame(
   id = factor(rep(1:n_ids, each = obs_per_id)),
-  e2_value = runif(total_obs, min = -1, max = 1),
-  p4_value = runif(total_obs, min = -1, max = 1)
+  e2_value = runif(total_obs, min = -1, max = 1), #updated values range
+  p4_value = runif(total_obs, min = -1, max = 1) #updates values range
 )
 
 # Generate response variable with noise
@@ -50,14 +50,21 @@ sim_data_reprex$y <- intercepts[sim_data_reprex$id] +
   p4_slopes[sim_data_reprex$id] * sim_data_reprex$p4_value +
   rnorm(total_obs, mean = 0, sd = 0.3)
 
+```
+
+# Take 1: run lmBF with random slope and intercept as before
+Returns NA warning and infinite standard errors
+```{r}
+set.seed(20250602)
+
 # Check for NAs
-stopifnot(!anyNA(sim_data))
+stopifnot(!anyNA(sim_data_reprex))
 
 # Fit full and null Bayes factor models
 # Full model against model with grand intercept only
 bf_full <- BayesFactor::lmBF(
   y ~ e2_value + p4_value + id + id:p4_value + id:e2_value,
-  data = sim_data,
+  data = sim_data_reprex,
   whichRandom = "id",
   progress = FALSE
 )
@@ -65,7 +72,7 @@ bf_full <- BayesFactor::lmBF(
 # Model with grand intercept only against model with random intercepts for each id
 bf_null <- BayesFactor::lmBF(
   y ~ id,
-  data = sim_data,
+  data = sim_data_reprex,
   whichRandom = "id",
   progress = FALSE
 )
@@ -81,12 +88,49 @@ print(bf_ratio)
 # Extract numeric BF value
 bf_val <- as.numeric(extractBF(bf_ratio)$bf)
 print(bf_val)
-
-
-lme4::lmer(
-  y ~ e2_value + p4_value + (e2_value | id) + (p4_value - 1 | id) + (1 | id),
-  data = sim_data_reprex) |> summary()
-
 ```
 
+# Take 2: run lmBF with random slope and intercept specification by creating separate ID col
+No warning returned
+```{r}
+set.seed(20250602)
+
+sim_data_reprex$id0 = sim_data_reprex$id # Keep a copy of id for later use
+
+# Check for NAs
+stopifnot(!anyNA(sim_data_reprex))
+
+# Fit full and null Bayes factor models
+# Full model against model with grand intercept only
+bf_full <- BayesFactor::lmBF(
+  y ~ e2_value + p4_value + id + id0:p4_value + id0:e2_value,
+  data = sim_data_reprex,
+  whichRandom = "id",
+  progress = FALSE
+)
+
+# Model with grand intercept only against model with random intercepts for each id
+bf_null <- BayesFactor::lmBF(
+  y ~ id,
+  data = sim_data_reprex,
+  whichRandom = "id",
+  progress = FALSE
+)
+
+# Compute ratio - meaning dividing full model by model with random intercepts for each id
+bf_ratio <- bf_full / bf_null
+
+# Print results
+print(bf_full)
+print(bf_null)
+print(bf_ratio)
+
+# Extract numeric BF value
+bf_val <- as.numeric(extractBF(bf_ratio)$bf)
+print(bf_val)
+```
+# Providing session info
+```{r}
+sessionInfo()
+```
 

@@ -43,12 +43,16 @@ library(tidyverse)
 library(lmerTest)
 library(BayesFactor)
 
+path <- "C:/code/shine_RegisteredReport/power_analysis/bfda/"
 
-informed_parameters <- read.csv("informed_parameters.csv")
+informed_parameters <- read.csv(file.path(path, "informed_parameters.csv"))
 
 # Keep only cols of interest
 informed_parameters <- informed_parameters %>%
   select(intercept_mean, e2_slope_mean, p4_slope_mean) 
+
+head(informed_parameters)
+
 ```
 
 ## Defining the parameters for bfda model 
