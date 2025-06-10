@@ -1,0 +1,138 @@
+---
+title: "bfda_visualisations"
+author: "Carolina Guidolin"
+date: "2025-06-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Visualising TPR for parameter combinations and for individual parameters 
+
+```{r}
+simulations_100 <- read.csv("bfda_simulated_data_100.csv")
+simulations_paralleled_100 <- read.csv("bfa_simulated_data_100_parallelised.csv")
+```
+
+## Filling in the dataset with missing value
+These missing value are a result of the selection of parameters performed in informed_data_simulation.Rmd. This means that we might not have al values between -0.5 and 0.5 for the slopes, and -1 and 1 for the intercept. This is problematic in a heatmap, since the plot would automatically label this tile with a TPR of 0. We want to flag the TPR of these missing combinations as NA.
+```{r}
+# Get all combinations, so that the heatmap makes sense
+# And fill in TPR for the missing combinations as NA
+# This way we distinguish between missing values from the original dataset
+# And values that have TPR = 0 
+
+# Getting all combinations using complete()
+simulations_100_complete <- simulations_100 %>%
+  complete(e2_slope_mean, p4_slope_mean, intercept_mean)
+
+```
+
+# Heatmaps of pairwise combinations
+
+## Heatmap 1: E2 slope and P4 slope
+```{r}
+e2p4_slopes <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = p4_slope_mean)) +
+  geom_tile(aes(fill = TPR), colour = "black") +
+  scale_fill_gradient(low = "white", high = "darkgreen", na.value = "grey80", name = "TPR") +
+  labs(
+    title = "TPR for E2 and P4 slope means combinations",
+    subtitle = "100 simulations for each parameter combination\n Grey = missing data",
+    x = "E2 slope mean",
+    y = "P4 slope mean"
+  ) +
+   scale_x_continuous(
+    breaks = seq(-0.5, 0.5, by = 0.1),
+    limits = c(-0.55, 0.55)
+  ) +
+  scale_y_continuous(
+    breaks = seq(-0.5, 0.5, by = 0.1),
+    limits = c(-0.55, 0.55)
+  ) +
+  coord_fixed(ratio = 1) +
+  theme_bw() +
+  theme(
+    aspect.ratio = 1,
+    panel.grid = element_blank(),  # clean up grid lines inside tiles
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  )
+```
+
+## Heatmap 2: E2 slope and intercept
+```{r}
+e2slope_int <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = intercept_mean)) +
+  geom_tile(aes(fill = TPR), colour = "black") +
+  scale_fill_gradient(low = "white", high = "darkgreen", na.value = "grey80", name = "TPR") +
+  labs(
+    title = "TPR for E2 slope and intercept means combinations",
+    subtitle = "100 simulations for each parameter combination\n Grey = missing data",
+    x = "E2 slope mean",
+    y = "Intercept mean"
+  ) +
+   scale_x_continuous(
+    breaks = seq(-0.5, 0.5, by = 0.1),
+    limits = c(-0.55, 0.55)
+  ) +
+  scale_y_continuous(
+    breaks = seq(-1, 1, by = 0.3),
+    limits = c(-0.6, 1)
+  ) +
+  coord_fixed(ratio = 1) +
+  theme_bw() +
+  theme(
+    aspect.ratio = 1,
+    panel.grid = element_blank(),  # clean up grid lines inside tiles
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  )
+```
+## Heatmap 3: P4 slope and intercept
+```{r}
+p4slope_int <- ggplot(simulations_100_complete, aes(x = p4_slope_mean, y = intercept_mean)) +
+  geom_tile(aes(fill = TPR), colour = "black") +
+  scale_fill_gradient(low = "white", high = "darkgreen", na.value = "grey80", name = "TPR") +
+  labs(
+    title = "TPR for P4 slope and intercept means combinations",
+    subtitle = "100 simulations for each parameter combination\n Grey = missing data",
+    x = "P4 slope mean",
+    y = "Intercept mean"
+  ) +
+   scale_x_continuous(
+    breaks = seq(-0.5, 0.5, by = 0.1),
+    limits = c(-0.55, 0.55)
+  ) +
+  scale_y_continuous(
+    breaks = seq(-1, 1, by = 0.3),
+    limits = c(-0.6, 1)
+  ) +
+  coord_fixed(ratio = 1) +
+  theme_bw() +
+  theme(
+    aspect.ratio = 1,
+    panel.grid = element_blank(),  # clean up grid lines inside tiles
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  )
+```
+
+# Heatmpas in a single plot
+```{r}
+library(cowplot)
+
+heatmaps_multiplot <- cowplot::plot_grid(e2p4_slopes, e2slope_int, p4slope_int,
+                                         labels = c("A", "B", "C"),
+                                         ncol = 3,
+                                         nrow = 1, 
+                                         align = "hv")
+
+ggsave(filename = "heatmaps_multiplot.png",
+       plot = heatmaps_multiplot,
+       width = 14, 
+       height = 6,
+       dpi = 600, 
+       bg = "white")
+```
+
