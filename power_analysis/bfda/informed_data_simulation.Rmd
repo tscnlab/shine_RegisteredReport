@@ -56,9 +56,6 @@ mlt_data_standardised <- mlt_data %>%
   mutate(mel_supp_standardised = (mel_supp - mean(mel_supp))/sd(mel_supp)
   )
 
-## QUESTION! The data above is kind of standardised from -1 to 1 but not precisely, i.e. some values are slightly above -1 and 1. Should this formula (mix max scaling) be used instead?
-# mutate(mel_supp_minmax = 2 * ((mel_supp - min(mel_supp)) / (max(mel_supp) - min(mel_supp)) - 0.5))
-
 
 # Calculating summary statistics on standardised data 
 mlt_data_standardised_summary <- mlt_data_standardised %>%
@@ -76,7 +73,7 @@ We want to assign a lot of possible values to our predictors, and check how this
 
 ```{r}
 # Intercept in standardised scale (since now melatonin data does not go from 0 to 100)
-intercept_mean_list <- seq(-1, 1, by = 0.3)
+intercept_mean_list <- seq(-1, 1, by = 0.1)
 
 #E2 slope values in standardised scale
 e2_slope_mean_list <- seq(-0.5, 0.5, by = 0.1)
@@ -172,9 +169,6 @@ accepted_params_summary <- accepted_params %>%
             median_p4 = median(p4_slope_mean),
             max_p4 = max(p4_slope_mean))
 
-# This should lead to 468 accepted observations. QUESTION! Are we iterating over the same combinations of parameters multiple times "by accident", since the values for the e2 and p4 slopes are the same (-0.5 to 0.5)? Is this a problem?
-# Check using 
-# any(duplicated(accepted_params)) - yields FALSE
 ```
 
 ## Visualise relationships between simulated variables for intercept and slopes 

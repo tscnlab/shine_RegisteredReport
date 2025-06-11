@@ -17,10 +17,12 @@ This means that we are accounting for random intercepts but not random slopes. T
 ## Importing the informed parameters
 These have been calculated in the previous script (informed_data_simulation.Rmd)
 ```{r}
+set.seed(20250602)
 
 library(tidyverse)
 library(lmerTest)
 library(BayesFactor)
+library(furrr)
 
 informed_parameters <- read.csv("informed_parameters.csv")
 
@@ -53,7 +55,7 @@ p4_min_value <- -1
 p4_max_value <- 1
 
 # Define number of simulations to run
-num_simulations <- 1000 # should ideally be 1000, but simulation crashed when trying values >10 
+num_simulations <- 100 # should ideally be 1000, but simulation crashed when trying values >10 
 
 # Define threshold for Bayes Factor 
 bf_threshold <- 3
@@ -203,7 +205,7 @@ all.equal(bfda_simulated_data_parallel, bfda_simulated_data)
 
 ```{r}
 # Run parallel simulations
-bfda_simulated_data_parallel_1000 <- future_map_dfr(1:nrow(informed_parameters), function(row) {
+new_bfda_simulated_data_parallel_100 <- future_map_dfr(1:nrow(informed_parameters), function(row) {
   
   bf_list <- numeric(num_simulations)
   
@@ -259,7 +261,7 @@ bfda_simulated_data_parallel_1000 <- future_map_dfr(1:nrow(informed_parameters),
 .options = furrr_options(seed = 20250602) # setting seed so we always get the same thing 
 )
 
-write.csv(bfda_simulated_data_parallel_1000, "bfa_simulated_data_1000_parallelised.csv", row.names = FALSE)
+write.csv(new_bfda_simulated_data_parallel_100, "new_bfda_simulated_data_100_parallelised.csv", row.names = FALSE)
 
 
 ```

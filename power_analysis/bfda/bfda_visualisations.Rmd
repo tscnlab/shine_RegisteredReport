@@ -12,8 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Visualising TPR for parameter combinations and for individual parameters 
 
 ```{r}
-simulations_100 <- read.csv("bfda_simulated_data_100.csv")
-simulations_paralleled_100 <- read.csv("bfa_simulated_data_100_parallelised.csv")
+simulations_paralleled_100 <- read.csv("new_bfda_simulated_data_100_parallelised.csv")
 ```
 
 ## Filling in the dataset with missing value
@@ -34,12 +33,11 @@ simulations_100_complete <- simulations_100 %>%
 
 ## Heatmap 1: E2 slope and P4 slope
 ```{r}
-e2p4_slopes <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = p4_slope_mean)) +
+e2p4_slopes <- ggplot(simulations_paralleled_100, aes(x = e2_slope_mean, y = p4_slope_mean)) +
   geom_tile(aes(fill = TPR), colour = "black") +
-  scale_fill_gradient(low = "white", high = "darkgreen", na.value = "grey80", name = "TPR") +
+  scale_fill_gradient(low = "white", high = "darkgreen", name = "TPR") +
   labs(
     title = "TPR for E2 and P4 slope means combinations",
-    subtitle = "100 simulations for each parameter combination\n Grey = missing data",
     x = "E2 slope mean",
     y = "P4 slope mean"
   ) +
@@ -58,10 +56,29 @@ e2p4_slopes <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = p4_sl
     panel.grid = element_blank(),  # clean up grid lines inside tiles
     axis.text = element_text(size = 10),
     axis.title = element_text(size = 12)
+  ) + 
+facet_wrap(
+  ~ intercept_mean,
+  labeller = labeller(
+    intercept_mean = function(x) {
+      rounded <- round(as.numeric(x), 1)
+      # Replace -0.0 with 0.0
+      rounded[rounded == -0.0] <- 0.0
+      sprintf("%.1f", rounded)
+    }
   )
+)
+
+ggsave(filename = "heatmpap_faceted.png",
+       plot = e2p4_slopes,
+       width = 8, 
+       height = 8,
+       dpi = 600, 
+       bg = "white")
 ```
 
-## Heatmap 2: E2 slope and intercept
+## Heatmap 2: E2 slope and P4 slope, with "collapsed" intercept
+Since we observed that the intercept values do not make a big difference, we can now 
 ```{r}
 e2slope_int <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = intercept_mean)) +
   geom_tile(aes(fill = TPR), colour = "black") +
@@ -87,7 +104,8 @@ e2slope_int <- ggplot(simulations_100_complete, aes(x = e2_slope_mean, y = inter
     panel.grid = element_blank(),  # clean up grid lines inside tiles
     axis.text = element_text(size = 10),
     axis.title = element_text(size = 12)
-  )
+  ) + 
+  facet_wrap(~ p4_slope_mean)
 ```
 ## Heatmap 3: P4 slope and intercept
 ```{r}
