@@ -30,7 +30,7 @@ The following steps are performed in the code below:
 5. Define noise distribution with mean 0 and SD 0.3
 6. For each combination of the distribution and values of E2 and P4, simulate data y (i.e. melatonin suppression) for that model - for the same combination do this 100 times, meaning for each combination you get 100 values of y
 7. Calculate the mean and SD of the simulated data of this one y 
-8. Compare to reference data and accept values falling within the first and third quantile of the reference data. These values will then be saved and selected for bfda simulations.
+8. Compare to reference data and accept values falling within the 2.5th and 97.5th of the reference data. These values will then be saved and selected for bfda simulations.
 
 ## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://www.biorxiv.org/content/10.1101/2025.01.15.633125v2.full)
 
@@ -42,14 +42,19 @@ library(tidyverse)
 # Importing data
 mlt_data <- read.csv("VR_paper_melatonin_results.csv")
 
+# First, we want to remove obvious outliers, such as participants that had more melatonin in the dim light control compared to the bright light condition 
+mlt_data <- mlt_data %>%
+  filter(mel_supp>0)
+
 # Calculating summary statistics on raw data
 mlt_raw_data_summary <- mlt_data %>%
   summarise(mean = mean(mel_supp),
             sd = sd(mel_supp),
             median = median(mel_supp),
             iqr = IQR(mel_supp),
-            q1 = quantile(mel_supp, 0.25),
-            q3 = quantile(mel_supp, 0.75))
+            q1 = quantile(mel_supp, 0.025),
+            q3 = quantile(mel_supp, 0.975))
+
 
 # Standardise raw data so that it falls between -1 and 1
 mlt_data_standardised <- mlt_data %>%
@@ -62,8 +67,8 @@ mlt_data_standardised_summary <- mlt_data_standardised %>%
   summarise(mean = mean(mel_supp_standardised),
             sd = sd(mel_supp_standardised),
             median = median(mel_supp_standardised),
-            q1 = quantile(mel_supp_standardised, 0.25),
-            q3 = quantile(mel_supp_standardised, 0.75)
+            q1 = quantile(mel_supp_standardised, 0.025),
+            q3 = quantile(mel_supp_standardised, 0.975)
             )
 
 ```
@@ -73,7 +78,8 @@ We want to assign a lot of possible values to our predictors, and check how this
 
 ```{r}
 # Intercept in standardised scale (since now melatonin data does not go from 0 to 100)
-intercept_mean_list <- seq(-1, 1, by = 0.1)
+intercept_mean_list <- round(seq(-0.9, 0.9, by = 0.3), 2)
+
 
 #E2 slope values in standardised scale
 e2_slope_mean_list <- seq(-0.5, 0.5, by = 0.1)
@@ -176,22 +182,6 @@ accepted_params_summary <- accepted_params %>%
 GGally::ggpairs(simulated_data_results[simulated_data_results$accepted == "yes", 
                                     c("intercept_mean", "e2_slope_mean", "p4_slope_mean")])
 
-```
-## Other visualisation, for each parameter of interest
-```{r}
-library(ggplot2)
-
-ggplot(accepted_params, aes(x = intercept_mean)) +
-  geom_histogram(binwidth = 5, fill = "skyblue", color = "black") +
-  theme_minimal()
-
-ggplot(accepted_params, aes(x = e2_slope_mean)) +
-  geom_histogram(binwidth = 0.1, fill = "salmon", color = "black") +
-  theme_minimal()
-
-ggplot(accepted_params, aes(x = p4_slope_mean)) +
-  geom_histogram(binwidth = 0.1, fill = "lightgreen", color = "black") +
-  theme_minimal()
 ```
 We now have a list of parameters for the intercept, the slope of E2 and the slope of P4 which we know yield values of y (melatonin suppression) that match the melatonin suppression data we have. Note that these values are calculated for standardised E2, P4 and melatonin suppression data. We now want to save these "accepted" values to perform BFDA on them. 
 
