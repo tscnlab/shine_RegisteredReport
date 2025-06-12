@@ -14,14 +14,14 @@ library(tidyverse)
 ```
 
 
-# Using data from Fernandez-Alonso et al (2025) to create a set of plasuible distribution values for the parameters in our model
+# Using data from [Fernandez-Alonso & Spitschan (2025)](https://doi.org/10.1111/jpi.70051) to create a set of plasuible distribution values for the parameters in our model
 
 Model of interest to test effects of hormones on melatonin suppression:
-Melatonin suppression = E2 levels + P4 levels + (E2 + P4 | PID),
+Melatonin suppression = E2 levels + P4 levels + (E2 | PID) + (P4 | PID) + (1 | ID),
 where E2 = estradiol levels, P4 = progesterone levels, and PID = participant ID.
 
 The following steps are performed in the code below:
-1. Import melatonin suppression data (32 observations, each from a different participant) and summarise melatonin suppression values in this chort. Note that participants in this dataset mostly did not have dilated pupil (col: pupil_dilation), whereas participants in our experiment will all have dilated pupils. However, they received the same light stimulus intensity and wavelength as the participants in our prospective study, delivered with the same methodology (VR headsets). We believe this is the best approximation for the melatonin suppression levels we will observe in our study, and hence a valid dataset to base of data simulation on.
+1. Import melatonin suppression data (32 observations, each from a different participant), exclude outliers, and summarise melatonin suppression values in this cohort. Note that participants in this dataset mostly did not have dilated pupil (col: pupil_dilation), whereas participants in our experiment will all have dilated pupils. However, they received the same light stimulus intensity and wavelength as the participants in our prospective study, delivered with the same methodology (VR headsets). We believe this is the best approximation for the melatonin suppression levels we will observe in our study, and hence a valid dataset to base of data simulation on.
 2. Standardise melatonin suppression values so that they are on a scale from -1 to 1
 3. Define a list of potential distribution for intercept (standardised scale from -1 to 1)
 4. Define a list of potential distribution for the slope of E2 (first predictor) - mean and SD (standardised scale from -1 to 1)
@@ -32,7 +32,7 @@ The following steps are performed in the code below:
 7. Calculate the mean and SD of the simulated data of this one y 
 8. Compare to reference data and accept values falling within the 2.5th and 97.5th of the reference data. These values will then be saved and selected for bfda simulations.
 
-## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://www.biorxiv.org/content/10.1101/2025.01.15.633125v2.full)
+## First, we import data about melatonin suppression values from [Fernandez-Alonso(2025)](https://doi.org/10.1111/jpi.70051)
 
 We use this data as reference data to understand the range of possible melatonin suppression values given a light exposure of ~90 melanopic EDI (here condition = "bright light"). This experiment was performed with virtually the same protocol as the one we are designing, i.e. light exposure of same intensity presented at the same circadian time and using the same VR headset system. While most participants in this study did not have a dilated pupil (and in our study all participants will have dilated pupil during light exposure), we still consider these findings to be informative for our sample size calculation. 
 

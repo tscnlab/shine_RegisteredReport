@@ -70,30 +70,39 @@ plan(multisession, workers = parallel::detectCores() - 1)
 # Run BFDA 
 new_bfda_simulated_data_parallel_100 <- furrr::future_map_dfr(1:nrow(informed_parameters), function(row) {
   
+  # Store BFs for simulations
   bf_list <- numeric(num_simulations)
   
+  # Create a for loop to iterate through the possible combinations of parameters (intercept, e2 slopes, and p4 slope)
   for (simulation in seq_len(num_simulations)) {
     
+    # Sample intercept and slopes from normal distribution of defined parameters
     intercept <- rnorm(n_ids, mean = informed_parameters$intercept_mean[row], sd = intercept_sd)
     e2_slope  <- rnorm(n_ids, mean = informed_parameters$e2_slope_mean[row], sd = e2_slope_sd)
     p4_slope  <- rnorm(n_ids, mean = informed_parameters$p4_slope_mean[row], sd = p4_slope_sd)
     
+    # Simulate data for n_ids individuals
+    # Sampling values from a uniform distribution 
     sim_data <- data.frame(
       id = factor(rep(1:n_ids, each = 4)),
       e2_value = runif(4 * n_ids, e2_min_value, e2_max_value),
       p4_value = runif(4 * n_ids, p4_min_value, p4_max_value)
     )
     
+    # Create values for y by solving the equation and add noise
     sim_data$y <- intercept[sim_data$id] +
       e2_slope[sim_data$id] * sim_data$e2_value +
       p4_slope[sim_data$id] * sim_data$p4_value +
       rnorm(n_ids * 4, mean = 0, sd = 0.3)
     
-    sim_data$id0 <- sim_data$id # Keep id separate for later
+    # Keep id separate for later - needed for specifying random slopes
+    sim_data$id0 <- sim_data$id 
     
+    # Check no created data is NA
     if (anyNA(sim_data)) stop(sprintf("NA found in sim_data at row %d, simulation %d", row, simulation))
     
-    # This function already calculates the ratio between the full model and a model
+    # Calculate BF
+    # The lmBF function already calculates the ratio between the full model and a model
     # where the intercept is the grand mean
     bf_full <- BayesFactor::lmBF(
       y ~ e2_value + p4_value + id + id0:p4_value + id0:e2_value,
@@ -111,13 +120,16 @@ new_bfda_simulated_data_parallel_100 <- furrr::future_map_dfr(1:nrow(informed_pa
       progress = FALSE
     )
     
-     # Take ratio of these two models, meaning the models where intercept
-     # is the grand mean cancel each other out
-      # So we are effectively taking a ratio between the full model and a model where the intercept is different for id
+    # Take ratio of these two models, meaning the models where intercept
+    # is the grand mean cancel each other out
+    # So we are effectively taking a ratio between the full model and a model where the intercept is different for id
     bf_ratio <- bf_full / bf_only_intercept
+    
+    # Extract BF
     bf_list[simulation] <- as.numeric(BayesFactor::extractBF(bf_ratio)$bf)
   }
   
+  # Calculate the true positive rate (TPR)
   TPR <- sum(bf_list > bf_threshold) / num_simulations
   
   # Return one row per each iteration
@@ -128,7 +140,7 @@ new_bfda_simulated_data_parallel_100 <- furrr::future_map_dfr(1:nrow(informed_pa
     TPR = TPR
   )
 },
-.options = furrr_options(seed = 20250602) # setting seed so we always get the same thing 
+.options = furrr_options(seed = 20250602) # setting seed so we always get the same results 
 )
 
 # Save the data file 
